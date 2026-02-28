@@ -79,6 +79,15 @@ beforeEach(() => {
 })
 
 describe('SearchView', () => {
+  it('renders breadcrumb with Promptyard and Search results', () => {
+    const wrapper = mountView()
+    const breadcrumb = wrapper.find('nav[aria-label="Breadcrumb"]')
+
+    expect(breadcrumb.exists()).toBe(true)
+    expect(breadcrumb.text()).toContain('Promptyard')
+    expect(breadcrumb.text()).toContain('Search results')
+  })
+
   it('shows empty state when no query is provided (SC-008)', () => {
     const wrapper = mountView()
 

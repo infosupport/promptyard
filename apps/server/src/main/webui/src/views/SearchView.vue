@@ -2,6 +2,7 @@
 import { ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ContentItemList } from '@/components/content'
+import { AppBreadcrumb } from '@/components/navigation'
 import { useSearch } from '@/composables/useSearch'
 
 const route = useRoute()
@@ -51,6 +52,10 @@ watch(
 
 <template>
   <div>
+    <AppBreadcrumb
+      :segments="[{ label: 'Promptyard', to: '/' }, { label: 'Search results' }]"
+    />
+
     <h1 class="mb-6 text-2xl font-semibold tracking-tight">
       Search results<template v-if="hasQuery && !loading && !error"> ({{ totalItems }} items found)</template>
     </h1>
