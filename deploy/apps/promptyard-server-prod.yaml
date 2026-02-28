@@ -2,16 +2,16 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: promptyard-server-prod
-  namespace: argocd                          # PLACEHOLDER: ArgoCD namespace
+  namespace: argocd                          
 spec:
-  project: default                           # PLACEHOLDER: ArgoCD project
+  project: default                          
   source:
     repoURL: git@github.com:infosupport/promptyard.git
-    targetRevision: main                     # PLACEHOLDER: branch/tag to track
+    targetRevision: main                   
     path: deploy/envs/prod/server
   destination:
-    server: https://kubernetes.default.svc   # PLACEHOLDER: cluster API URL
-    namespace: promptyard-prod               # PLACEHOLDER: target namespace
+    server: https://kubernetes.default.svc  
+    namespace: promptyard-prod             
   syncPolicy:
     automated:
       prune: true

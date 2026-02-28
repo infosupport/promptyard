@@ -3,6 +3,9 @@ kind: Kustomization
 resources:
   - ../../../base/server
 namespace: promptyard-prod
+images:
+  - name: ghcr.io/infosupport/promptyard
+    newTag: latest
 configMapGenerator:
   - name: promptyard-server-config
     literals:
