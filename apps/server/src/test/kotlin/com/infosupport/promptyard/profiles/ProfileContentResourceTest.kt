@@ -206,13 +206,11 @@ class ProfileContentResourceTest {
     // -------------------------------------------------------------------------
 
     @Test
-    fun `redirects to login when unauthenticated`() {
-        Given {
-            redirects().follow(false)
-        } When {
+    fun `returns 401 when unauthenticated`() {
+        When {
             get("/api/profiles/some-user/content")
         } Then {
-            statusCode(302)
+            statusCode(401)
         }
     }
 }

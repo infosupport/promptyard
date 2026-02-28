@@ -149,17 +149,16 @@ class CommentsResourceTest {
     // -------------------------------------------------------------------------
 
     @Test
-    fun `redirects to login when posting comment without authentication`() {
+    fun `returns 401 when posting comment without authentication`() {
         val body = """{"text": "Unauthorized comment"}"""
 
         Given {
             contentType(MediaType.APPLICATION_JSON)
             body(body)
-            redirects().follow(false)
         } When {
             post("/api/content/prompts/some-slug/comments")
         } Then {
-            statusCode(302)
+            statusCode(401)
         }
     }
 
@@ -244,13 +243,11 @@ class CommentsResourceTest {
     // -------------------------------------------------------------------------
 
     @Test
-    fun `redirects to login when listing comments without authentication`() {
-        Given {
-            redirects().follow(false)
-        } When {
+    fun `returns 401 when listing comments without authentication`() {
+        When {
             get("/api/content/prompts/some-slug/comments")
         } Then {
-            statusCode(302)
+            statusCode(401)
         }
     }
 }

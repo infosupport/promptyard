@@ -197,13 +197,11 @@ class MyContentResourceTest {
     // -------------------------------------------------------------------------
 
     @Test
-    fun `redirects to login when no authentication is provided`() {
-        Given {
-            redirects().follow(false)
-        } When {
+    fun `returns 401 when no authentication is provided`() {
+        When {
             get("/api/profiles/me/content")
         } Then {
-            statusCode(302)
+            statusCode(401)
         }
     }
 }
