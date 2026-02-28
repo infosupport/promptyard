@@ -42,14 +42,6 @@ class ContentItemIndexerTest {
     fun cleanUp() {
         contentItemRepository.deleteAll()
         userProfileRepository.deleteAll()
-        try {
-            openSearchClient.deleteByQuery { builder ->
-                builder.index(CONTENT_ITEMS_INDEX)
-                    .query { q -> q.matchAll { it } }
-            }
-        } catch (_: Exception) {
-            // Index might not exist or be empty
-        }
     }
 
     // -------------------------------------------------------------------------
