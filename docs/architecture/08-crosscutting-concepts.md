@@ -134,6 +134,53 @@ kubectl kustomize deploy/base/server/ | kubectl apply -f -
 
 Open [http://promptyard.local](http://promptyard.local) in your browser.
 
+## Secret Management
+
+Secrets (OIDC client secrets, database credentials, session encryption keys) are managed with
+[Bitnami Sealed Secrets](https://github.com/bitnami-labs/sealed-secrets). The Sealed Secrets
+controller runs in `kube-system` and is deployed via an ArgoCD Application
+(`deploy/infra/sealed-secrets.yaml`).
+
+### How it works
+
+1. A `SealedSecret` resource is stored in Git with encrypted values.
+2. The controller decrypts the `SealedSecret` into a regular Kubernetes `Secret` at runtime.
+3. Pods reference the resulting `Secret` as usual — no application code changes needed.
+
+Each environment overlay (`deploy/envs/staging/server/`, `deploy/envs/prod/server/`) contains a
+`sealed-secret.yaml` with the encrypted data for that environment.
+
+### Sealing a secret value
+
+Fetch the controller's public certificate and encrypt a single value:
+
+```bash
+kubeseal --fetch-cert \
+  --controller-name=sealed-secrets-controller \
+  --controller-namespace=kube-system \
+  > sealed-secrets-cert.pem
+
+echo -n "my-secret-value" | kubeseal --raw \
+  --cert sealed-secrets-cert.pem \
+  --namespace promptyard-staging \
+  --name promptyard-server-secret
+```
+
+Paste the output into the corresponding key in `sealed-secret.yaml` under `spec.encryptedData`.
+
+### Rotating secrets
+
+1. Seal the new value with `kubeseal --raw` as shown above.
+2. Replace the old encrypted value in the `sealed-secret.yaml` for the target environment.
+3. Commit and push — ArgoCD syncs the updated `SealedSecret` and the controller re-creates the
+   `Secret` with the new plaintext.
+
+### Certificate rotation
+
+The controller rotates its sealing key pair every 30 days by default. Old keys are retained so
+previously sealed secrets remain decryptable. If you need to re-encrypt all secrets against the
+latest certificate, fetch the new cert and re-seal each value.
+
 ## User Interface
 
 ## Error Handling
