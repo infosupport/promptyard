@@ -11,6 +11,7 @@ Promptyard is a full-stack prompt management application organized as a Maven mu
 ```
 promptyard/
 ├── pom.xml                    # Root aggregator POM
+├── mvnw                       # Maven wrapper (shared by all modules)
 ├── apps/
 │   ├── server/                # Quarkus/Kotlin backend + Vue 3 frontend
 │   │   ├── pom.xml
@@ -28,26 +29,28 @@ promptyard/
 ## Build & Development Commands
 
 ### Root (Multi-Module)
-- **Build all modules:** `./apps/server/mvnw -f pom.xml package` (from repo root)
-- **Run all tests:** `./apps/server/mvnw -f pom.xml test`
+All commands run from the repo root:
+
+- **Build all modules:** `./mvnw package`
+- **Run all tests:** `./mvnw test`
 
 ### Server App (`apps/server/`)
-All server commands run from `apps/server/`:
+All server commands run from the repo root:
 
-- **Dev mode (live reload):** `./mvnw quarkus:dev`
-- **Run all tests:** `./mvnw test`
-- **Run a single test class:** `./mvnw test -Dtest=PromptsResourceTest`
-- **Run a single test method:** `./mvnw test -Dtest=PromptsResourceTest#testMethodName`
-- **Package:** `./mvnw package`
+- **Dev mode (live reload):** `./mvnw -pl apps/server quarkus:dev`
+- **Run all tests:** `./mvnw -pl apps/server test`
+- **Run a single test class:** `./mvnw -pl apps/server test -Dtest=PromptsResourceTest`
+- **Run a single test method:** `./mvnw -pl apps/server test -Dtest=PromptsResourceTest#testMethodName`
+- **Package:** `./mvnw -pl apps/server package`
 
 Dev services (PostgreSQL, Keycloak) are managed automatically by Quarkus Dev Services — no need to run `docker compose` manually.
 
 ### Client App (`apps/client/`)
-All client commands run from `apps/client/`:
+All client commands run from the repo root:
 
-- **Dev mode:** `./mvnw quarkus:dev`
-- **Run all tests:** `./mvnw test`
-- **Package:** `./mvnw package`
+- **Dev mode:** `./mvnw -pl apps/client quarkus:dev`
+- **Run all tests:** `./mvnw -pl apps/client test`
+- **Package:** `./mvnw -pl apps/client package`
 
 ### Frontend (Vue 3 + pnpm, in `apps/server/src/main/webui/`)
 All frontend commands run from `apps/server/src/main/webui/`:
