@@ -82,6 +82,58 @@ URL-friendly slugs serve as public identifiers instead of numeric IDs:
 5. Check uniqueness (scoped by content type for content items)
 6. If duplicate, append incrementing counter (`-2`, `-3`, ...) until unique
 
+## Local Kubernetes Development
+
+Use this setup only for testing the deployment manifests. You can run the application 
+without running on Kubernetes with `./mvnw -pl apps/serverquarkus:dev`. We recommend 
+that approach over the steps documented here.
+
+### Prerequisites
+
+- [kind](https://kind.sigs.k8s.io/) — Kubernetes in Docker
+- [kubectl](https://kubernetes.io/docs/tasks/tools/) — Kubernetes CLI
+
+### Create the cluster
+
+```bash
+kind create cluster --config deploy/kind-config.yaml
+```
+
+This creates a single-node cluster with port mappings for the nginx ingress controller (host ports 80 and 443).
+
+### Install the nginx ingress controller
+
+```bash
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+```
+
+Wait for the controller to be ready:
+
+```bash
+kubectl wait --namespace ingress-nginx \
+  --for=condition=ready pod \
+  --selector=app.kubernetes.io/component=controller \
+  --timeout=90s
+```
+
+### Add a hosts entry
+
+Add the following line to `/etc/hosts` so that `promptyard.local` resolves to your local cluster:
+
+```
+127.0.0.1 promptyard.local
+```
+
+### Deploy the application
+
+```bash
+kubectl kustomize deploy/base/server/ | kubectl apply -f -
+```
+
+### Access the application
+
+Open [http://promptyard.local](http://promptyard.local) in your browser.
+
 ## User Interface
 
 ## Error Handling
