@@ -27,7 +27,7 @@ class ContentItemsResource {
                 description = item.description,
                 tags = item.tags,
                 contentType = item.contentType,
-                author = ContentItemAuthorResponse(fullName = item.author.fullName),
+                author = ContentItemAuthorResponse(fullName = item.author.fullName, slug = item.author.slug),
                 createdAt = item.createdAt.toString(),
                 modifiedAt = item.modifiedAt?.toString()
             )

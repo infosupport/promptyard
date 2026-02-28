@@ -29,14 +29,25 @@
 - `CommentRepository` extends `PanacheRepository<Comment>`. Methods: `findByContentItemId(contentItemId)` — sorted by createdAt DESC.
 - Count queries use Panache's `count("field = ?1 and field2 = ?2", val1, val2)` pattern.
 
+## OpenSearch Patterns
+- **Index name**: `content_items` (constant `CONTENT_ITEMS_INDEX` in search package)
+- **SearchResource**: `GET /api/search?q={query}&page={pageIndex}`, returns `ContentItemPageResponse`
+- **Test isolation**: Use `@BeforeEach` to `deleteByQuery` + `indices().refresh()` the OpenSearch index before each test. `@AfterEach` `deleteByQuery` alone is insufficient because other test classes may leave stale documents.
+- **OpenSearch Refresh**: `deleteByQuery` `refresh` param expects `Refresh` enum, not boolean. Use separate `indices().refresh()` call.
+- **ContentItemSearchDocument**: Has slug, title, contentType, content, description, tags, authorFullName, authorSlug, createdAt, modifiedAt
+- **ContentItemAuthorResponse**: Has `fullName` and `slug` fields.
+
 ## Current Test Counts
-- `ContentItemsResourceTest`: 5 tests
+- `ContentItemsResourceTest`: 6 tests
 - `PromptsResourceTest`: 24 tests (GET: 8 incl. isOwner, POST: 4, PUT: 7, DELETE: 5)
-- `UserProfilesResourceTest`: 23 tests
+- `UserProfilesResourceTest`: 25 tests
 - `UserProfileSlugGeneratorTest`: 10 tests
 - `MyContentResourceTest`: 9 tests
 - `CommentsResourceTest`: 9 tests (POST: 5, GET: 4)
-- Total: 80 tests
+- `ContentItemIndexerTest`: 6 tests
+- `SearchResourceTest`: 9 tests
+- `ProfileContentResourceTest`: 9 tests
+- Total: 107 tests
 
 ## Infrastructure Notes
 - Running the full test suite may OOM the Keycloak testcontainer if system memory is constrained. Run test classes individually or in small batches as a workaround.

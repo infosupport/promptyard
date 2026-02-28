@@ -20,6 +20,11 @@ const router = createRouter({
           component: () => import('@/views/HomeView.vue'),
         },
         {
+          path: 'search',
+          name: 'search',
+          component: () => import('@/views/SearchView.vue'),
+        },
+        {
           path: 'content/prompts/new',
           name: 'create-prompt',
           component: () => import('@/views/CreatePromptView.vue'),

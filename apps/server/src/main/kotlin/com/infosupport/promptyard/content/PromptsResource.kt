@@ -110,10 +110,14 @@ class PromptsResource {
             eventType = ContentItemEventType.CREATED,
             contentType = "prompt",
             slug = prompt.slug,
+            title = prompt.title,
             content = prompt.content,
             description = prompt.description,
             tags = prompt.tags,
             authorFullName = userProfile.fullName,
+            authorSlug = userProfile.slug,
+            createdAt = prompt.createdAt,
+            modifiedAt = prompt.modifiedAt,
         ))
 
         return Response
@@ -156,10 +160,14 @@ class PromptsResource {
             eventType = ContentItemEventType.UPDATED,
             contentType = "prompt",
             slug = prompt.slug,
+            title = prompt.title,
             content = prompt.content,
             description = prompt.description,
             tags = prompt.tags,
             authorFullName = userProfile.fullName,
+            authorSlug = userProfile.slug,
+            createdAt = prompt.createdAt,
+            modifiedAt = prompt.modifiedAt,
         ))
 
         return Response.ok(UpdatePromptResponse(slug = prompt.slug)).build()

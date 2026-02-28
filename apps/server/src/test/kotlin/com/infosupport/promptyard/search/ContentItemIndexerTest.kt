@@ -16,6 +16,8 @@ import jakarta.ws.rs.core.MediaType
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.opensearch.client.opensearch.OpenSearchClient
@@ -92,11 +94,15 @@ class ContentItemIndexerTest {
         assertTrue(response.found())
         val doc = response.source()!!
         assertEquals("indexed-prompt", doc.slug)
+        assertEquals("Indexed Prompt", doc.title)
         assertEquals("prompt", doc.contentType)
         assertEquals("Tell me about indexing", doc.content)
         assertEquals("A prompt to be indexed", doc.description)
         assertEquals(listOf("opensearch", "indexing"), doc.tags)
         assertEquals("Index Create User", doc.authorFullName)
+        assertEquals("index-create-user", doc.authorSlug)
+        assertNotNull(doc.createdAt)
+        assertNull(doc.modifiedAt)
     }
 
     // -------------------------------------------------------------------------
@@ -158,9 +164,13 @@ class ContentItemIndexerTest {
 
         assertTrue(response.found())
         val doc = response.source()!!
+        assertEquals("Update Index Prompt", doc.title)
         assertEquals("New description", doc.description)
         assertEquals("Updated content", doc.content)
         assertEquals(listOf("updated"), doc.tags)
+        assertEquals("index-update-user", doc.authorSlug)
+        assertNotNull(doc.createdAt)
+        assertNotNull(doc.modifiedAt)
     }
 
     // -------------------------------------------------------------------------

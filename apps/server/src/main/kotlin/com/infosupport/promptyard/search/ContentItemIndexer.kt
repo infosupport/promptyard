@@ -33,11 +33,15 @@ class ContentItemIndexer {
     private fun indexDocument(event: ContentItemEvent) {
         val document = ContentItemSearchDocument(
             slug = requireNotNull(event.slug) { "slug is required for ${event.eventType} event" },
+            title = requireNotNull(event.title) { "title is required for ${event.eventType} event" },
             contentType = event.contentType,
             content = event.content,
             description = event.description,
             tags = event.tags ?: emptyList(),
             authorFullName = requireNotNull(event.authorFullName) { "authorFullName is required for ${event.eventType} event" },
+            authorSlug = requireNotNull(event.authorSlug) { "authorSlug is required for ${event.eventType} event" },
+            createdAt = requireNotNull(event.createdAt) { "createdAt is required for ${event.eventType} event" },
+            modifiedAt = event.modifiedAt,
         )
 
         client.index { builder ->
