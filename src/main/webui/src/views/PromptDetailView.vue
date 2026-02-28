@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { MonacoEditor } from '@/components/content'
+import { CommentsSection, MonacoEditor } from '@/components/content'
 import { AuthorCard } from '@/components/profiles'
 import { AppBreadcrumb } from '@/components/navigation'
 import { Copy, Check, Pencil } from 'lucide-vue-next'
@@ -154,6 +154,9 @@ defineExpose({ prompt, loading, error, notFound, copied, copyError, fetchData, c
               <MonacoEditor :model-value="prompt.content" :disabled="true" />
             </CardContent>
           </Card>
+
+          <!-- Comments section (FR-006, FR-007, FR-008) -->
+          <CommentsSection :slug="prompt.slug" />
         </div>
 
         <!-- Sidebar (FR-007, FR-011) -->

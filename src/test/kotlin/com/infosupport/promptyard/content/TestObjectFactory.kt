@@ -16,6 +16,9 @@ class TestObjectFactory {
     @Inject
     lateinit var userProfileRepository: com.infosupport.promptyard.profiles.UserProfileRepository
 
+    @Inject
+    lateinit var commentRepository: CommentRepository
+
     @Transactional
     fun createUserProfile(
         subjectName: String,
@@ -57,5 +60,22 @@ class TestObjectFactory {
         }
         contentItemRepository.persist(prompt)
         return prompt
+    }
+
+    @Transactional
+    fun createComment(
+        author: com.infosupport.promptyard.profiles.UserProfile,
+        contentItem: com.infosupport.promptyard.content.ContentItem,
+        text: String,
+        createdAt: Instant = Instant.now(),
+    ): Comment {
+        val comment = Comment().apply {
+            this.text = text
+            this.createdAt = createdAt
+            this.authorId = author.id!!
+            this.contentItemId = contentItem.id!!
+        }
+        commentRepository.persist(comment)
+        return comment
     }
 }

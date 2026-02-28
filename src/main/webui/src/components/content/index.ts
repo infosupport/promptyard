@@ -1,3 +1,4 @@
+export { default as CommentsSection } from './CommentsSection.vue'
 export { default as ContentItemCard } from './ContentItemCard.vue'
 export { default as ContentItemList } from './ContentItemList.vue'
 export { default as TagInput } from './TagInput.vue'
