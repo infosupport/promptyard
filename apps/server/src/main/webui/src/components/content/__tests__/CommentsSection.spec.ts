@@ -25,10 +25,23 @@ const mockComments: CommentResponse[] = [
   },
 ]
 
+interface ExposedForm {
+  setFieldValue: (field: string, value: unknown) => void
+}
+
+interface ExposedVm {
+  form: ExposedForm
+  onSubmit: (e?: Event) => Promise<void>
+}
+
 function mountComponent() {
   return mount(CommentsSection, {
     props: { slug: 'test-prompt' },
   })
+}
+
+function getVm(wrapper: ReturnType<typeof mount>): ExposedVm {
+  return wrapper.vm as unknown as ExposedVm
 }
 
 describe('CommentsSection', () => {
@@ -117,8 +130,9 @@ describe('CommentsSection', () => {
     const wrapper = mountComponent()
     await flushPromises()
 
-    await wrapper.find('textarea').setValue('Nice work!')
-    await wrapper.find('form').trigger('submit')
+    const { form, onSubmit } = getVm(wrapper)
+    form.setFieldValue('text', 'Nice work!')
+    await onSubmit()
     await flushPromises()
 
     expect(createComment).toHaveBeenCalledWith('test-prompt', { text: 'Nice work!' })
@@ -133,8 +147,9 @@ describe('CommentsSection', () => {
     const wrapper = mountComponent()
     await flushPromises()
 
-    await wrapper.find('textarea').setValue('My comment')
-    await wrapper.find('form').trigger('submit')
+    const { form, onSubmit } = getVm(wrapper)
+    form.setFieldValue('text', 'My comment')
+    await onSubmit()
     await flushPromises()
 
     expect(wrapper.text()).toContain('Failed to post comment')
