@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: promptyard-server-prod
+  namespace: argocd                          # PLACEHOLDER: ArgoCD namespace
+spec:
+  project: default                           # PLACEHOLDER: ArgoCD project
+  source:
+    repoURL: git@github.com:infosupport/promptyard.git
+    targetRevision: main                     # PLACEHOLDER: branch/tag to track
+    path: deploy/envs/prod/server
+  destination:
+    server: https://kubernetes.default.svc   # PLACEHOLDER: cluster API URL
+    namespace: promptyard-prod               # PLACEHOLDER: target namespace
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
