@@ -20,6 +20,7 @@ vi.mock('vue-router', () => ({
 const mockItems = ref<ContentItemSummary[]>([])
 const mockPageIndex = ref(0)
 const mockTotalPages = ref(0)
+const mockTotalItems = ref(0)
 const mockLoading = ref(false)
 const mockError = ref(false)
 const mockSearch = vi.fn()
@@ -29,6 +30,7 @@ vi.mock('@/composables/useSearch', () => ({
     items: mockItems,
     pageIndex: mockPageIndex,
     totalPages: mockTotalPages,
+    totalItems: mockTotalItems,
     loading: mockLoading,
     error: mockError,
     search: mockSearch,
@@ -71,6 +73,7 @@ beforeEach(() => {
   mockItems.value = []
   mockPageIndex.value = 0
   mockTotalPages.value = 0
+  mockTotalItems.value = 0
   mockLoading.value = false
   mockError.value = false
 })
@@ -107,15 +110,6 @@ describe('SearchView', () => {
     mountView()
 
     expect(mockSearch).toHaveBeenCalledWith('kotlin', 0)
-  })
-
-  it('pre-fills search input with query from URL (SC-004)', () => {
-    mockRoute.query = { q: 'kotlin' }
-
-    const wrapper = mountView()
-    const input = wrapper.find('input[type="search"]')
-
-    expect((input.element as HTMLInputElement).value).toBe('kotlin')
   })
 
   it('calls search with correct page when page param is provided (SC-007)', () => {
@@ -185,39 +179,6 @@ describe('SearchView', () => {
     expect(wrapper.text()).toContain('Search failed')
   })
 
-  it('navigates to /search?q={query} on form submit (SC-005)', async () => {
-    mockRoute.query = { q: 'kotlin' }
-
-    const wrapper = mountView()
-    const input = wrapper.find('input[type="search"]')
-    await input.setValue('quarkus')
-
-    const form = wrapper.find('form')
-    await form.trigger('submit')
-
-    expect(mockPush).toHaveBeenCalledWith({ path: '/search', query: { q: 'quarkus' } })
-  })
-
-  it('does not navigate on submit when input is empty', async () => {
-    const wrapper = mountView()
-
-    const form = wrapper.find('form')
-    await form.trigger('submit')
-
-    expect(mockPush).not.toHaveBeenCalled()
-  })
-
-  it('does not navigate on submit when input is whitespace only', async () => {
-    const wrapper = mountView()
-    const input = wrapper.find('input[type="search"]')
-    await input.setValue('   ')
-
-    const form = wrapper.find('form')
-    await form.trigger('submit')
-
-    expect(mockPush).not.toHaveBeenCalled()
-  })
-
   it('updates URL with page param on page-change (SC-006)', async () => {
     mockRoute.query = { q: 'kotlin' }
     mockItems.value = sampleItems
@@ -251,6 +212,29 @@ describe('SearchView', () => {
     expect(mockPush).toHaveBeenCalledWith({ path: '/search', query: { q: 'kotlin' } })
   })
 
+  it('shows total items count in heading when results are loaded', async () => {
+    mockRoute.query = { q: 'kotlin' }
+    mockItems.value = sampleItems
+    mockTotalItems.value = 15
+    mockTotalPages.value = 2
+
+    const wrapper = mountView()
+    await flushPromises()
+
+    expect(wrapper.find('h1').text()).toContain('Search results')
+    expect(wrapper.find('h1').text()).toContain('15 items found')
+  })
+
+  it('does not show items count in heading while loading', async () => {
+    mockRoute.query = { q: 'kotlin' }
+    mockLoading.value = true
+
+    const wrapper = mountView()
+    await flushPromises()
+
+    expect(wrapper.find('h1').text()).toBe('Search results')
+  })
+
   it('passes loading prop to ContentItemList', async () => {
     mockRoute.query = { q: 'kotlin' }
     mockLoading.value = true
@@ -262,10 +246,4 @@ describe('SearchView', () => {
     expect(list.props('loading')).toBe(true)
   })
 
-  it('has an accessible search input with aria-label (NFR-004)', () => {
-    const wrapper = mountView()
-    const input = wrapper.find('input[type="search"]')
-
-    expect(input.attributes('aria-label')).toBe('Search content')
-  })
 })

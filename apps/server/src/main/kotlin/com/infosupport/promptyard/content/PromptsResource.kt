@@ -105,7 +105,7 @@ class PromptsResource {
 
         contentItemRepository.persist(prompt)
 
-        eventBus.requestAndForget<Any>("content-item.changed", ContentItemEvent(
+        eventBus.publish("content-item.changed", ContentItemEvent(
             contentItemId = prompt.id!!,
             eventType = ContentItemEventType.CREATED,
             contentType = "prompt",
@@ -155,7 +155,7 @@ class PromptsResource {
         prompt.tags = request.tags
         prompt.modifiedAt = Instant.now()
 
-        eventBus.requestAndForget<Any>("content-item.changed", ContentItemEvent(
+        eventBus.publish("content-item.changed", ContentItemEvent(
             contentItemId = prompt.id!!,
             eventType = ContentItemEventType.UPDATED,
             contentType = "prompt",
@@ -193,7 +193,7 @@ class PromptsResource {
             return Response.status(Response.Status.FORBIDDEN).build()
         }
 
-        eventBus.requestAndForget<Any>("content-item.changed", ContentItemEvent(
+        eventBus.publish("content-item.changed", ContentItemEvent(
             contentItemId = prompt.id!!,
             eventType = ContentItemEventType.DELETED,
             contentType = prompt.contentType,

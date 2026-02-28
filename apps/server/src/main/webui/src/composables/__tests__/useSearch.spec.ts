@@ -35,6 +35,7 @@ const mockSearchResult: ContentPageResponse = {
   ],
   pageIndex: 0,
   totalPages: 2,
+  totalItems: 2,
 }
 
 type UseSearchReturn = ReturnType<typeof useSearch>

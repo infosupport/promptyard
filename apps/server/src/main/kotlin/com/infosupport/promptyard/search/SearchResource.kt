@@ -39,7 +39,7 @@ class SearchResource {
         val trimmedQuery = query?.trim()
 
         if (trimmedQuery.isNullOrEmpty()) {
-            return Response.ok(ContentItemPageResponse(items = emptyList(), pageIndex = 0, totalPages = 0)).build()
+            return Response.ok(ContentItemPageResponse(items = emptyList(), pageIndex = 0, totalPages = 0, totalItems = 0)).build()
         }
 
         if (trimmedQuery.length > MAX_QUERY_LENGTH) {
@@ -83,7 +83,7 @@ class SearchResource {
                 )
             }
 
-            Response.ok(ContentItemPageResponse(items = items, pageIndex = pageIndex, totalPages = totalPages)).build()
+            Response.ok(ContentItemPageResponse(items = items, pageIndex = pageIndex, totalPages = totalPages, totalItems = totalHits)).build()
         } catch (e: Exception) {
             log.error("Search request failed", e)
             Response.status(Response.Status.SERVICE_UNAVAILABLE).build()

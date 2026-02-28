@@ -1,16 +1,12 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { Search } from 'lucide-vue-next'
-import { Input } from '@/components/ui/input'
 import { ContentItemList } from '@/components/content'
 import { useSearch } from '@/composables/useSearch'
 
 const route = useRoute()
 const router = useRouter()
-const { items, pageIndex, totalPages, loading, error, search } = useSearch()
-
-const searchInput = ref('')
+const { items, pageIndex, totalPages, totalItems, loading, error, search } = useSearch()
 
 function parsePageParam(value: unknown): number {
   const parsed = parseInt(String(value))
@@ -19,7 +15,6 @@ function parsePageParam(value: unknown): number {
 
 function performSearch() {
   const query = String(route.query.q ?? '').trim()
-  searchInput.value = String(route.query.q ?? '')
 
   if (!query) return
 
@@ -32,12 +27,6 @@ watch(
   () => performSearch(),
   { immediate: true },
 )
-
-function onSubmit() {
-  const trimmed = searchInput.value.trim()
-  if (!trimmed) return
-  router.push({ path: '/search', query: { q: trimmed } })
-}
 
 function onPageChange(newPageIndex: number) {
   const query = String(route.query.q ?? '').trim()
@@ -62,18 +51,9 @@ watch(
 
 <template>
   <div>
-    <h1 class="mb-6 text-2xl font-semibold tracking-tight">Search</h1>
-
-    <form class="relative mb-8" @submit.prevent="onSubmit">
-      <Search class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-      <Input
-        v-model="searchInput"
-        type="search"
-        placeholder="Search prompts, skills..."
-        aria-label="Search content"
-        class="pl-10"
-      />
-    </form>
+    <h1 class="mb-6 text-2xl font-semibold tracking-tight">
+      Search results<template v-if="hasQuery && !loading && !error"> ({{ totalItems }} items found)</template>
+    </h1>
 
     <div v-if="!hasQuery" class="py-12 text-center text-muted-foreground">
       Enter a search term to find prompts, skills, and more.

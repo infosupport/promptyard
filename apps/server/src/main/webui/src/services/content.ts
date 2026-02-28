@@ -17,6 +17,7 @@ export interface ContentPageResponse {
   items: ContentPageItem[]
   pageIndex: number
   totalPages: number
+  totalItems: number
 }
 
 export async function getAllContent(page: number = 0): Promise<ContentPageResponse> {

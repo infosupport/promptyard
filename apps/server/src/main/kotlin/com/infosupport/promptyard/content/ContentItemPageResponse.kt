@@ -6,5 +6,6 @@ import kotlinx.serialization.Serializable
 data class ContentItemPageResponse(
     val items: List<com.infosupport.promptyard.content.ContentItemResponse>,
     val pageIndex: Int,
-    val totalPages: Int
+    val totalPages: Int,
+    val totalItems: Long,
 )

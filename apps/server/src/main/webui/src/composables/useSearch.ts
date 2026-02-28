@@ -24,6 +24,7 @@ export function useSearch() {
 
   const pageIndex = computed(() => data.value?.pageIndex ?? 0)
   const totalPages = computed(() => data.value?.totalPages ?? 0)
+  const totalItems = computed(() => data.value?.totalItems ?? 0)
 
   async function search(query: string, page: number = 0) {
     if (abortController) {
@@ -44,5 +45,5 @@ export function useSearch() {
     }
   }
 
-  return { items, pageIndex, totalPages, loading, error, search }
+  return { items, pageIndex, totalPages, totalItems, loading, error, search }
 }
