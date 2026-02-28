@@ -8,3 +8,4 @@
 - ~~[ADR006 - Use @primevue/forms for form handling](adr/006-use-primevue-forms-for-form-handling.md)~~ (superseded by ADR008)
 - [ADR007 - Use functional slicing to structure the backend](adr/007-use-functional-slicing-for-backend-structure.md)
 - [ADR008 - Use shadcn/vue for UI components and form handling](adr/008-use-shadcn-vue-for-ui-components.md)
+- [ADR009 - Use OpenSearch as the search engine](adr/009-use-opensearch-for-content-search.md)
