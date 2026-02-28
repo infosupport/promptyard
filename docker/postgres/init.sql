@@ -1,2 +1,0 @@
-CREATE DATABASE promptyard;
-CREATE DATABASE keycloak;

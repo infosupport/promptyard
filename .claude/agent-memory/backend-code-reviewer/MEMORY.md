@@ -78,3 +78,17 @@
 ### Build Issues (noted FEAT-008)
 - Full suite may fail due to Keycloak testcontainer OOM or ContentItemsResourceTest class loading error
 - These are pre-existing issues, not related to feature changes
+
+### Comment Entity & Resource (FEAT-012)
+- `Comment` entity uses same dual-column FK pattern as `ContentItem` (raw `authorId`/`contentItemId` + lazy `@ManyToOne`)
+- `CommentsResource` at `/api/content/prompts/{slug}/comments` with GET (list) and POST (create)
+- `CommentRepository.findByContentItemId` sorts by `createdAt DESC` (newest first)
+- `TestObjectFactory.createComment()` accepts `author`, `contentItem`, `text`, and optional `createdAt`
+- V4 migration: `TIMESTAMP WITH TIME ZONE` (note: V1-V3 use `TIMESTAMP` without timezone)
+- Comments FK to `content_item` with `ON DELETE CASCADE`; FK to `user_profile` without cascade
+
+### Review Findings (FEAT-012)
+- N+1 query risk: `getComments` iterates comments and accesses lazy `comment.author.fullName` per comment
+- Fix: use `JOIN FETCH c.author` in repository query (also prevents LazyInitializationException)
+- Inconsistent return type: `getComments` returns `List<CommentResponse>` + throws `NotFoundException`; rest of codebase returns `Response`
+- All resources in project return `Response`; `CommentsResource.getComments` is first to return raw type

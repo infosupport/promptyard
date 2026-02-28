@@ -1,0 +1,23 @@
+name: Verify Pull Request (Client)
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'apps/client/**'
+
+jobs:
+  build:
+    name: Build and test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25
+          cache: maven
+
+      - name: Build and test
+        run: ./mvnw -pl apps/client verify

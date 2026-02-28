@@ -1,8 +1,10 @@
-name: Verify Pull Request
+name: Verify Pull Request (Server)
 
 on:
   pull_request:
     branches: [main]
+    paths:
+      - 'apps/server/**'
 
 jobs:
   backend:
@@ -18,14 +20,14 @@ jobs:
           cache: maven
 
       - name: Build and test
-        run: ./mvnw verify -Dquarkus.quinoa=false
+        run: ./mvnw -pl apps/server verify -Dquarkus.quinoa=false
 
   frontend:
     name: Frontend
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: src/main/webui
+        working-directory: apps/server/src/main/webui
     steps:
       - uses: actions/checkout@v4
 
@@ -36,7 +38,7 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
-          cache-dependency-path: src/main/webui/pnpm-lock.yaml
+          cache-dependency-path: apps/server/src/main/webui/pnpm-lock.yaml
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
