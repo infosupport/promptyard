@@ -104,3 +104,12 @@
 - CreatePromptView and EditPromptView have ~95% duplicated form template — watch for a third usage to extract shared PromptForm component
 
 See [patterns.md](./patterns.md) for detailed component and styling patterns.
+
+### Comments Feature (FEAT-012)
+- `CommentsSection` organism in `src/main/webui/src/components/content/CommentsSection.vue` -- fetches, displays, and submits comments
+- `getComments(slug)` and `createComment(slug, request)` in `src/main/webui/src/services/comments.ts` -- follows existing service pattern with `encodeURIComponent`
+- `formatRelativeTime(isoDate, now?)` in `src/main/webui/src/lib/format.ts` -- hand-rolled relative time with injectable `now` for testability
+- Form uses vee-validate + zod schema (toTypedSchema) + shadcn/vue FormField/FormItem/FormControl/FormMessage pattern
+- Comments prepended via `unshift()` after submit; form reset via `form.resetForm()`
+- `defineExpose` used in CommentsSection for test access -- should be removed in favor of DOM interaction in tests
+- CommentsSection Storybook story only has Default variant and makes real API calls -- needs MSW or presentational extraction
