@@ -1,0 +1,21 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../../base/server
+namespace: promptyard-staging
+configMapGenerator:
+  - name: promptyard-server-config
+    literals:
+      - QUARKUS_OIDC_AUTH_SERVER_URL=<your-oidc-auth-server-url>
+      - QUARKUS_OIDC_CLIENT_ID=<your-oidc-client-id>
+      - QUARKUS_DATASOURCE_JDBC_URL=<your-jdbc-url>
+      - QUARKUS_OPENSEARCH_HOSTS=<your-opensearch-hosts>
+secretGenerator:
+  - name: promptyard-server-secret
+    literals:
+      - QUARKUS_OIDC_CLIENT_SECRET=<your-oidc-client-secret>
+      - QUARKUS_DATASOURCE_USERNAME=<your-db-username>
+      - QUARKUS_DATASOURCE_PASSWORD=<your-db-password>
+      - QUARKUS_HTTP_AUTH_SESSION_ENCRYPTION_KEY=<your-session-encryption-key>
+generatorOptions:
+  disableNameSuffixHash: true

@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: promptyard-server-staging
+  namespace: argocd                          # PLACEHOLDER: ArgoCD namespace
+spec:
+  project: default                           # PLACEHOLDER: ArgoCD project
+  source:
+    repoURL: git@github.com:infosupport/promptyard.git
+    targetRevision: main                     # PLACEHOLDER: branch/tag to track
+    path: deploy/envs/staging/server
+  destination:
+    server: https://kubernetes.default.svc   # PLACEHOLDER: cluster API URL
+    namespace: promptyard-staging            # PLACEHOLDER: target namespace
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
