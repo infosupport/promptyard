@@ -20,6 +20,7 @@ class ContentItemsResource {
     fun getContentItems(@QueryParam("page") @DefaultValue("0") page: Int): Response {
         val query = contentItemRepository.findPaged(page)
         val totalPages = query.pageCount()
+        val totalItems = query.count()
         val items = query.list().map { item ->
             _root_ide_package_.com.infosupport.promptyard.content.ContentItemResponse(
                 slug = item.slug,
@@ -27,7 +28,7 @@ class ContentItemsResource {
                 description = item.description,
                 tags = item.tags,
                 contentType = item.contentType,
-                author = ContentItemAuthorResponse(fullName = item.author.fullName),
+                author = ContentItemAuthorResponse(fullName = item.author.fullName, slug = item.author.slug),
                 createdAt = item.createdAt.toString(),
                 modifiedAt = item.modifiedAt?.toString()
             )
@@ -37,7 +38,8 @@ class ContentItemsResource {
             _root_ide_package_.com.infosupport.promptyard.content.ContentItemPageResponse(
                 items,
                 page,
-                totalPages
+                totalPages,
+                totalItems,
             )
         ).build()
     }

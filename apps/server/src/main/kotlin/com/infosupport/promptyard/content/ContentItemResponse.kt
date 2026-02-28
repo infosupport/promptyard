@@ -4,7 +4,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ContentItemAuthorResponse(
-    val fullName: String
+    val fullName: String,
+    val slug: String,
 )
 
 @Serializable

@@ -5,6 +5,7 @@ import jakarta.enterprise.context.ApplicationScoped
 import jakarta.enterprise.event.Observes
 import jakarta.inject.Inject
 import org.opensearch.client.opensearch.OpenSearchClient
+import org.opensearch.client.opensearch._types.mapping.DateProperty
 import org.opensearch.client.opensearch._types.mapping.KeywordProperty
 import org.opensearch.client.opensearch._types.mapping.Property
 import org.opensearch.client.opensearch._types.mapping.TextProperty
@@ -26,6 +27,7 @@ class ContentItemIndexInitializer {
                     builder.index(CONTENT_ITEMS_INDEX)
                         .mappings { m ->
                             m.properties("slug", Property.of { p -> p.keyword(KeywordProperty.of { it }) })
+                                .properties("title", Property.of { p -> p.text(TextProperty.of { it }) })
                                 .properties("contentType", Property.of { p -> p.keyword(KeywordProperty.of { it }) })
                                 .properties("content", Property.of { p -> p.text(TextProperty.of { it }) })
                                 .properties("description", Property.of { p -> p.text(TextProperty.of { it }) })
@@ -37,6 +39,9 @@ class ContentItemIndexInitializer {
                                         })
                                     })
                                 })
+                                .properties("authorSlug", Property.of { p -> p.keyword(KeywordProperty.of { it }) })
+                                .properties("createdAt", Property.of { p -> p.date(DateProperty.of { it }) })
+                                .properties("modifiedAt", Property.of { p -> p.date(DateProperty.of { it }) })
                         }
                 }
                 log.info("Created OpenSearch index '$CONTENT_ITEMS_INDEX'")

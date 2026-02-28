@@ -35,6 +35,7 @@ const mockContentPage: ContentPageResponse = {
   ],
   pageIndex: 0,
   totalPages: 1,
+  totalItems: 2,
 }
 
 type UseAllContentReturn = ReturnType<typeof useAllContent>
@@ -215,6 +216,7 @@ describe('useAllContent', () => {
       ],
       pageIndex: 0,
       totalPages: 1,
+      totalItems: 4,
     }
 
     vi.mocked(getAllContent).mockResolvedValue(mixedContentPage)

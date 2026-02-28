@@ -105,15 +105,19 @@ class PromptsResource {
 
         contentItemRepository.persist(prompt)
 
-        eventBus.requestAndForget<Any>("content-item.changed", ContentItemEvent(
+        eventBus.publish("content-item.changed", ContentItemEvent(
             contentItemId = prompt.id!!,
             eventType = ContentItemEventType.CREATED,
             contentType = "prompt",
             slug = prompt.slug,
+            title = prompt.title,
             content = prompt.content,
             description = prompt.description,
             tags = prompt.tags,
             authorFullName = userProfile.fullName,
+            authorSlug = userProfile.slug,
+            createdAt = prompt.createdAt,
+            modifiedAt = prompt.modifiedAt,
         ))
 
         return Response
@@ -151,15 +155,19 @@ class PromptsResource {
         prompt.tags = request.tags
         prompt.modifiedAt = Instant.now()
 
-        eventBus.requestAndForget<Any>("content-item.changed", ContentItemEvent(
+        eventBus.publish("content-item.changed", ContentItemEvent(
             contentItemId = prompt.id!!,
             eventType = ContentItemEventType.UPDATED,
             contentType = "prompt",
             slug = prompt.slug,
+            title = prompt.title,
             content = prompt.content,
             description = prompt.description,
             tags = prompt.tags,
             authorFullName = userProfile.fullName,
+            authorSlug = userProfile.slug,
+            createdAt = prompt.createdAt,
+            modifiedAt = prompt.modifiedAt,
         ))
 
         return Response.ok(UpdatePromptResponse(slug = prompt.slug)).build()
@@ -185,7 +193,7 @@ class PromptsResource {
             return Response.status(Response.Status.FORBIDDEN).build()
         }
 
-        eventBus.requestAndForget<Any>("content-item.changed", ContentItemEvent(
+        eventBus.publish("content-item.changed", ContentItemEvent(
             contentItemId = prompt.id!!,
             eventType = ContentItemEventType.DELETED,
             contentType = prompt.contentType,
