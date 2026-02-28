@@ -20,5 +20,4 @@ jobs:
           cache: maven
 
       - name: Build and test
-        run: ./mvnw verify
-        working-directory: apps/client
+        run: ./mvnw -pl apps/client verify

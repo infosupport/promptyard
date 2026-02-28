@@ -20,8 +20,7 @@ jobs:
           cache: maven
 
       - name: Build and test
-        run: ./mvnw verify -Dquarkus.quinoa=false
-        working-directory: apps/server
+        run: ./mvnw -pl apps/server verify -Dquarkus.quinoa=false
 
   frontend:
     name: Frontend
