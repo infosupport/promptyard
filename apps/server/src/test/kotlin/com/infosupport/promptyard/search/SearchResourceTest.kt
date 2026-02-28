@@ -40,6 +40,7 @@ class SearchResourceTest {
     @BeforeEach
     fun clearIndex() {
         try {
+            openSearchClient.indices().refresh { it.index(CONTENT_ITEMS_INDEX) }
             openSearchClient.deleteByQuery { builder ->
                 builder.index(CONTENT_ITEMS_INDEX)
                     .query { q -> q.matchAll { it } }
