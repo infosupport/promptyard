@@ -4,25 +4,54 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Promptyard is a full-stack prompt management application with a Quarkus/Kotlin backend and Vue 3 frontend, using Keycloak for authentication (dev) / Microsoft Entra ID (prod) and PostgreSQL for persistence.
+Promptyard is a full-stack prompt management application organized as a Maven multi-module monorepo. It uses Keycloak for authentication (dev) / Microsoft Entra ID (prod) and PostgreSQL for persistence.
+
+### Repository Structure
+
+```
+promptyard/
+├── pom.xml                    # Root aggregator POM
+├── apps/
+│   ├── server/                # Quarkus/Kotlin backend + Vue 3 frontend
+│   │   ├── pom.xml
+│   │   ├── src/main/kotlin/   # Backend source (Kotlin)
+│   │   ├── src/main/webui/    # Frontend source (Vue 3)
+│   │   ├── src/main/resources/
+│   │   ├── src/test/kotlin/   # Backend tests
+│   │   └── docker/            # Docker configs (Keycloak realm, Postgres init)
+│   └── client/                # Quarkus/Kotlin client library
+│       ├── pom.xml
+│       └── src/main/kotlin/   # Client source (Kotlin)
+└── docs/                      # Documentation
+```
 
 ## Build & Development Commands
 
-### Prerequisites
-Start dev services (PostgreSQL + Keycloak) before running the app:
+### Root (Multi-Module)
+- **Build all modules:** `./apps/server/mvnw -f pom.xml package` (from repo root)
+- **Run all tests:** `./apps/server/mvnw -f pom.xml test`
 
-```
-docker compose up -d
-```
+### Server App (`apps/server/`)
+All server commands run from `apps/server/`:
 
-### Backend (Quarkus + Kotlin, Maven)
 - **Dev mode (live reload):** `./mvnw quarkus:dev`
 - **Run all tests:** `./mvnw test`
 - **Run a single test class:** `./mvnw test -Dtest=PromptsResourceTest`
 - **Run a single test method:** `./mvnw test -Dtest=PromptsResourceTest#testMethodName`
 - **Package:** `./mvnw package`
 
-### Frontend (Vue 3 + pnpm, in `src/main/webui/`)
+Dev services (PostgreSQL, Keycloak) are managed automatically by Quarkus Dev Services — no need to run `docker compose` manually.
+
+### Client App (`apps/client/`)
+All client commands run from `apps/client/`:
+
+- **Dev mode:** `./mvnw quarkus:dev`
+- **Run all tests:** `./mvnw test`
+- **Package:** `./mvnw package`
+
+### Frontend (Vue 3 + pnpm, in `apps/server/src/main/webui/`)
+All frontend commands run from `apps/server/src/main/webui/`:
+
 - **Dev server:** `pnpm dev`
 - **Build:** `pnpm build`
 - **Lint:** `pnpm lint`
@@ -33,7 +62,11 @@ docker compose up -d
 
 ## Architecture
 
-### Backend (`src/main/kotlin/com/infosupport/promptyard/`)
+### Server App (`apps/server/`)
+
+The server is the main application. It contains both the Quarkus/Kotlin backend and the Vue 3 frontend (served via the Quinoa plugin).
+
+#### Backend (`apps/server/src/main/kotlin/com/infosupport/promptyard/`)
 
 Two domain modules organized by functional slice (ADR007):
 
@@ -46,15 +79,15 @@ Each module follows a consistent layered pattern:
 - **Slug generators** produce unique URL-friendly slugs with counter-based deduplication
 - **No service layer:** Resources call repositories directly (thin resource pattern)
 
-### Key Patterns
+#### Key Patterns
 - **Security:** Quarkus OIDC with `@Authenticated` annotation; `SecurityIdentity` injected for authorization checks (e.g., verifying content ownership via `identity.principal.name`)
 - **DI:** Quarkus Arc (CDI) with `@Inject` and `@ApplicationScoped`
-- **Database migrations:** Flyway in `src/main/resources/db/migration/`, auto-run at startup
-- **Frontend integration:** Quinoa plugin serves the Vue build; dev mode proxies to Vite on port 5173, backend runs on port 5000
+- **Database migrations:** Flyway in `apps/server/src/main/resources/db/migration/`, auto-run at startup
+- **Frontend integration:** Quinoa plugin serves the Vue build; dev mode proxies to Vite on port 5173, backend runs on port 8080
 
-### Frontend (`src/main/webui/`)
+#### Frontend (`apps/server/src/main/webui/`)
 
-Vue 3 with Composition API (`<script setup>`), TypeScript strict mode. The frontend is in early scaffold state.
+Vue 3 with Composition API (`<script setup>`), TypeScript strict mode.
 
 - **UI components:** [shadcn/vue](https://www.shadcn-vue.com/) — components copied into project source, styled with Tailwind CSS (ADR008)
 - **Forms:** vee-validate via shadcn/vue Form component, with zod for schema validation (ADR008)
@@ -65,7 +98,7 @@ Vue 3 with Composition API (`<script setup>`), TypeScript strict mode. The front
 - **Formatting:** Prettier (no semicolons, single quotes, 100 char print width)
 - **Component development:** [Storybook 10](https://storybook.js.org/) (`@storybook/vue3-vite`) for developing and documenting components in isolation. Stories are co-located with components using `*.stories.ts` files. Storybook tests run as a Vitest project via `@storybook/addon-vitest` with Playwright browser mode. Accessibility checks available via `@storybook/addon-a11y`.
 
-### Testing (`src/test/kotlin/`)
+#### Testing (`apps/server/src/test/kotlin/`)
 
 - **Framework:** JUnit 5 with `@QuarkusTest`, REST Assured (Kotlin extensions)
 - **Auth in tests:** `@TestSecurity` annotation to simulate authenticated users
@@ -73,11 +106,14 @@ Vue 3 with Composition API (`<script setup>`), TypeScript strict mode. The front
 - **Unauthenticated tests:** Use `redirects().follow(false)` and assert HTTP 302
 - Test structure mirrors the main source package layout
 
+### Client App (`apps/client/`)
+
+A Quarkus/Kotlin library for client-side integrations. Minimal dependencies (quarkus-kotlin, quarkus-arc). Currently in early development.
+
 ### Dev Environment
 
-- **PostgreSQL 17** on port 5432, **Keycloak 26.5** on port 8180 (via `docker-compose.yml`)
-- Environment variables for dev services loaded from `.env`
-- Keycloak realm pre-configured via `docker/keycloak/promptyard-realm.json`
+- **PostgreSQL** and **Keycloak** are provisioned automatically via Quarkus Dev Services when running the server in dev mode
+- Keycloak realm pre-configured via `apps/server/docker/keycloak/promptyard-realm.json`
 
 ## Documentation
 
@@ -100,8 +136,8 @@ This project uses specialized Claude Code agents (defined in `.claude/agents/`) 
 |-------|---------|-------------|
 | **backend-developer** | Implements Kotlin/Quarkus features with tests | Building endpoints, entities, repositories, migrations, bug fixes |
 | **frontend-developer** | Implements Vue 3 components, pages, and routes | Building components, forms, pages, Pinia stores, Vitest tests |
-| **backend-code-reviewer** | Reviews backend code quality and architecture | After writing or modifying code in `src/main/kotlin/` or `src/test/kotlin/` |
-| **frontend-code-reviewer** | Reviews frontend component design and practices | After writing or modifying code in `src/main/webui/` |
+| **backend-code-reviewer** | Reviews backend code quality and architecture | After writing or modifying code in `apps/server/src/main/kotlin/` or `apps/server/src/test/kotlin/` |
+| **frontend-code-reviewer** | Reviews frontend component design and practices | After writing or modifying code in `apps/server/src/main/webui/` |
 | **implementation-planner** | Creates implementation plans from spec documents | When a spec exists in `docs/specs/` and you need a step-by-step plan |
 
 ### Typical Workflow
@@ -118,7 +154,7 @@ Each agent maintains its own memory directory under `.claude/agent-memory/<agent
 
 ## Tech Stack Reference
 
-- **Kotlin 2.3, Java 25, Quarkus 3.31**
-- **Hibernate ORM Panache (Kotlin), Flyway, PostgreSQL**
-- **Vue 3, shadcn/vue, Pinia 3, Vue Router 5, Vite 7, Vitest, Storybook 10**
-- **pnpm** (frontend), **Maven** (backend)
+- **Kotlin 2.3, Java 25, Quarkus 3.31+ (server) / 3.32+ (client)**
+- **Hibernate ORM Panache (Kotlin), Flyway, PostgreSQL** (server)
+- **Vue 3, shadcn/vue, Pinia 3, Vue Router 5, Vite 7, Vitest, Storybook 10** (server frontend)
+- **pnpm** (frontend), **Maven** (backend, multi-module aggregator)
