@@ -1,0 +1,1825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAISE Knowledge Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Dark palette */
+            --bg-primary: #0a0f1a;
+            --bg-secondary: #111827;
+            --bg-card: #1a2234;
+            --bg-elevated: #232d42;
+
+            /* Text */
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+
+            /* Accents */
+            --accent-cyan: #22d3ee;
+            --accent-cyan-dim: rgba(34, 211, 238, 0.15);
+            --accent-emerald: #34d399;
+            --accent-emerald-dim: rgba(52, 211, 153, 0.15);
+            --accent-violet: #a78bfa;
+            --accent-violet-dim: rgba(167, 139, 250, 0.15);
+            --accent-amber: #fbbf24;
+            --accent-amber-dim: rgba(251, 191, 36, 0.15);
+            --accent-rose: #fb7185;
+
+            /* Borders */
+            --border-subtle: rgba(148, 163, 184, 0.1);
+            --border-medium: rgba(148, 163, 184, 0.2);
+
+            /* Gradients */
+            --gradient-hero: linear-gradient(135deg, #0a0f1a 0%, #1e293b 50%, #0f172a 100%);
+            --gradient-glow: radial-gradient(ellipse at center, rgba(34, 211, 238, 0.08) 0%, transparent 70%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Utility */
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* ============================================
+           HEADER
+        ============================================ */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(10, 15, 26, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .header-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 72px;
+            gap: 32px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+
+        .logo-mark {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 28px;
+            background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--accent-violet) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-subtitle {
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .search-container {
+            flex: 1;
+            max-width: 520px;
+            position: relative;
+        }
+
+        .search-box {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            background: var(--bg-card);
+            border: 1px solid var(--border-medium);
+            border-radius: 12px;
+            padding: 0 16px;
+            transition: all 0.2s ease;
+        }
+
+        .search-box:focus-within {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 0 3px var(--accent-cyan-dim);
+        }
+
+        .search-icon {
+            color: var(--text-muted);
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+
+        .search-input {
+            flex: 1;
+            background: none;
+            border: none;
+            padding: 14px 12px;
+            font-size: 15px;
+            color: var(--text-primary);
+            font-family: inherit;
+        }
+
+        .search-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .search-input:focus {
+            outline: none;
+        }
+
+        .search-shortcut {
+            background: var(--bg-elevated);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            color: var(--text-muted);
+            font-family: 'Outfit', monospace;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .btn-contribute {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, var(--accent-cyan) 0%, #06b6d4 100%);
+            color: var(--bg-primary);
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-contribute:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(34, 211, 238, 0.3);
+        }
+
+        /* Contribute Dropdown */
+        .contribute-dropdown {
+            position: relative;
+        }
+
+        .contribute-menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            min-width: 200px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-medium);
+            border-radius: 12px;
+            padding: 8px;
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-8px);
+            transition: all 0.2s ease;
+            z-index: 200;
+        }
+
+        .contribute-dropdown:hover .contribute-menu,
+        .contribute-dropdown:focus-within .contribute-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .contribute-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.15s ease;
+        }
+
+        .contribute-menu-item:hover {
+            background: var(--bg-elevated);
+        }
+
+        .contribute-menu-item svg {
+            width: 18px;
+            height: 18px;
+            color: var(--text-muted);
+        }
+
+        .contribute-menu-item.prompt:hover svg { color: var(--accent-cyan); }
+        .contribute-menu-item.skill:hover svg { color: var(--accent-emerald); }
+        .contribute-menu-item.agent:hover svg { color: var(--accent-violet); }
+        .contribute-menu-item.video:hover svg { color: var(--accent-rose); }
+        .contribute-menu-item.mcp:hover svg { color: var(--accent-amber); }
+
+        .profile-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--accent-violet) 0%, var(--accent-rose) 100%);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 16px;
+            color: white;
+            transition: all 0.2s ease;
+        }
+
+        .profile-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* ============================================
+           TASK NAVIGATION
+        ============================================ */
+        .task-nav {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-subtle);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .task-nav::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--gradient-glow);
+            pointer-events: none;
+        }
+
+        .task-nav-inner {
+            display: flex;
+            align-items: stretch;
+            gap: 4px;
+            padding: 8px 0;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .task-nav-inner::-webkit-scrollbar {
+            display: none;
+        }
+
+        .task-tab {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 24px;
+            background: transparent;
+            border: none;
+            border-radius: 10px;
+            color: var(--text-secondary);
+            font-family: 'Outfit', sans-serif;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .task-tab::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-violet));
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .task-tab:hover {
+            color: var(--text-primary);
+            background: var(--bg-card);
+        }
+
+        .task-tab.active {
+            color: var(--text-primary);
+            background: var(--bg-card);
+        }
+
+        .task-tab.active::after {
+            width: calc(100% - 32px);
+        }
+
+        .task-icon {
+            width: 20px;
+            height: 20px;
+            opacity: 0.7;
+        }
+
+        .task-tab:hover .task-icon,
+        .task-tab.active .task-icon {
+            opacity: 1;
+        }
+
+        /* ============================================
+           MAIN LAYOUT
+        ============================================ */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 32px;
+            padding: 32px 0 64px;
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 48px;
+        }
+
+        /* ============================================
+           SECTION HEADERS
+        ============================================ */
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .section-title-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .section-icon {
+            width: 24px;
+            height: 24px;
+        }
+
+        .section-subtitle {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .section-link {
+            color: var(--accent-cyan);
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: gap 0.2s ease;
+        }
+
+        .section-link:hover {
+            gap: 8px;
+        }
+
+        /* ============================================
+           CHAMPION PICKS
+        ============================================ */
+        .champion-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .content-card-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .content-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .content-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .content-card[data-type="prompt"]::before {
+            background: linear-gradient(90deg, var(--accent-cyan), #06b6d4);
+        }
+
+        .content-card[data-type="skill"]::before {
+            background: linear-gradient(90deg, var(--accent-emerald), #10b981);
+        }
+
+        .content-card[data-type="video"]::before {
+            background: linear-gradient(90deg, var(--accent-violet), #8b5cf6);
+        }
+
+        .content-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--border-medium);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .content-card:hover::before {
+            opacity: 1;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .content-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .content-badge.prompt {
+            background: var(--accent-cyan-dim);
+            color: var(--accent-cyan);
+        }
+
+        .content-badge.skill {
+            background: var(--accent-emerald-dim);
+            color: var(--accent-emerald);
+        }
+
+        .content-badge.video {
+            background: var(--accent-violet-dim);
+            color: var(--accent-violet);
+        }
+
+        .champion-badge {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: var(--accent-amber);
+            font-size: 12px;
+        }
+
+        .card-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .card-description {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .card-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .card-author {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .author-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--accent-emerald), var(--accent-cyan));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 13px;
+            color: var(--bg-primary);
+        }
+
+        .author-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .author-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .card-task-tag {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .card-stats {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        /* ============================================
+           TRENDING SECTION
+        ============================================ */
+        .trending-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        .trending-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 16px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .trending-card:hover {
+            background: var(--bg-elevated);
+            border-color: var(--border-medium);
+        }
+
+        .trending-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .trending-type {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+
+        .trending-type.prompt {
+            background: var(--accent-cyan-dim);
+            color: var(--accent-cyan);
+        }
+
+        .trending-type.skill {
+            background: var(--accent-emerald-dim);
+            color: var(--accent-emerald);
+        }
+
+        .trending-type.video {
+            background: var(--accent-violet-dim);
+            color: var(--accent-violet);
+        }
+
+        .trending-tool {
+            font-size: 11px;
+            color: var(--text-muted);
+            background: var(--bg-elevated);
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+
+        .trending-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .trending-stats {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .trending-stat {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* ============================================
+           RECENTLY ADDED
+        ============================================ */
+        .recent-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .recent-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .recent-item:hover {
+            background: var(--bg-elevated);
+            border-color: var(--border-medium);
+        }
+
+        .recent-type-indicator {
+            width: 4px;
+            height: 100%;
+            min-height: 60px;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+
+        .recent-type-indicator.prompt {
+            background: var(--accent-cyan);
+        }
+
+        .recent-type-indicator.skill {
+            background: var(--accent-emerald);
+        }
+
+        .recent-type-indicator.video {
+            background: var(--accent-violet);
+        }
+
+        .recent-content {
+            flex: 1;
+        }
+
+        .recent-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+
+        .recent-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .recent-time {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .recent-description {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        .recent-footer {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .recent-tags {
+            display: flex;
+            gap: 8px;
+        }
+
+        .tag {
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            background: var(--bg-elevated);
+            color: var(--text-secondary);
+        }
+
+        .recent-author {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-left: auto;
+        }
+
+        .recent-author strong {
+            color: var(--text-secondary);
+        }
+
+        .load-more-btn {
+            width: 100%;
+            padding: 14px;
+            margin-top: 20px;
+            background: var(--bg-card);
+            border: 1px dashed var(--border-medium);
+            border-radius: 12px;
+            color: var(--text-secondary);
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .load-more-btn:hover {
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+            border-style: solid;
+        }
+
+        /* ============================================
+           SIDEBAR
+        ============================================ */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            position: sticky;
+            top: 104px;
+            height: fit-content;
+        }
+
+        .sidebar-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .sidebar-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .sidebar-card-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sidebar-card-body {
+            padding: 20px;
+        }
+
+        /* AI Goal Card */
+        .goal-card-header {
+            background: linear-gradient(135deg, var(--accent-cyan-dim) 0%, var(--accent-violet-dim) 100%);
+        }
+
+        .ai-goal-quote {
+            font-size: 18px;
+            font-style: italic;
+            color: var(--text-primary);
+            line-height: 1.5;
+            margin-bottom: 16px;
+            padding-left: 16px;
+            border-left: 3px solid var(--accent-cyan);
+        }
+
+        .edit-goal-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--accent-cyan);
+            font-size: 14px;
+            font-weight: 500;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .edit-goal-btn:hover {
+            text-decoration: underline;
+        }
+
+        /* Bounties Card */
+        .bounty-count {
+            background: var(--accent-amber-dim);
+            color: var(--accent-amber);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .bounty-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .bounty-item {
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .bounty-item:last-child {
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .bounty-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .bounty-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .bounty-task {
+            color: var(--text-muted);
+        }
+
+        .bounty-points {
+            color: var(--accent-amber);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .view-all-bounties {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: var(--accent-amber-dim);
+            border: none;
+            border-radius: 10px;
+            color: var(--accent-amber);
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            margin-top: 16px;
+            transition: all 0.2s ease;
+        }
+
+        .view-all-bounties:hover {
+            background: rgba(251, 191, 36, 0.25);
+        }
+
+        /* Stats Card */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 16px;
+            background: var(--bg-elevated);
+            border-radius: 12px;
+        }
+
+        .stat-value {
+            font-family: 'Outfit', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .stat-value.cyan { color: var(--accent-cyan); }
+        .stat-value.emerald { color: var(--accent-emerald); }
+        .stat-value.violet { color: var(--accent-violet); }
+        .stat-value.amber { color: var(--accent-amber); }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* ============================================
+           FOOTER
+        ============================================ */
+        .footer {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-subtle);
+            margin-top: 64px;
+        }
+
+        .footer-main {
+            display: grid;
+            grid-template-columns: 2fr repeat(4, 1fr);
+            gap: 48px;
+            padding: 64px 0 48px;
+        }
+
+        .footer-brand {
+            max-width: 280px;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .footer-logo .logo-mark {
+            font-size: 24px;
+        }
+
+        .footer-description {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.7;
+        }
+
+        .footer-column h4 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-cyan);
+        }
+
+        .footer-bottom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 24px 0;
+            border-top: 1px solid var(--border-subtle);
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .footer-bottom a {
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+
+        .footer-bottom a:hover {
+            color: var(--accent-cyan);
+        }
+
+        /* ============================================
+           ANIMATIONS
+        ============================================ */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .champion-grid .content-card,
+        .trending-grid .trending-card,
+        .recent-list .recent-item {
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        .champion-grid .content-card:nth-child(1) { animation-delay: 0.1s; }
+        .champion-grid .content-card:nth-child(2) { animation-delay: 0.2s; }
+        .champion-grid .content-card:nth-child(3) { animation-delay: 0.3s; }
+
+        .trending-grid .trending-card:nth-child(1) { animation-delay: 0.1s; }
+        .trending-grid .trending-card:nth-child(2) { animation-delay: 0.15s; }
+        .trending-grid .trending-card:nth-child(3) { animation-delay: 0.2s; }
+        .trending-grid .trending-card:nth-child(4) { animation-delay: 0.25s; }
+
+        /* ============================================
+           RESPONSIVE
+        ============================================ */
+        @media (max-width: 1200px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: static;
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 20px;
+            }
+
+            .champion-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .trending-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .footer-main {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 32px;
+            }
+
+            .footer-brand {
+                grid-column: span 2;
+                max-width: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-inner {
+                height: auto;
+                padding: 16px 0;
+                flex-wrap: wrap;
+            }
+
+            .search-container {
+                order: 3;
+                max-width: none;
+                width: 100%;
+                margin-top: 16px;
+            }
+
+            .btn-contribute span {
+                display: none;
+            }
+
+            .task-nav-inner {
+                padding: 8px 16px;
+            }
+
+            .task-tab {
+                padding: 12px 16px;
+                font-size: 14px;
+            }
+
+            .champion-grid,
+            .trending-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-main {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-brand {
+                grid-column: span 1;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <header class="header">
+        <div class="container header-inner">
+            <a href="#" class="logo">
+                <span class="logo-mark">RAISE</span>
+                <span class="logo-subtitle">Knowledge Platform</span>
+            </a>
+
+            <div class="search-container">
+                <div class="search-box">
+                    <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                    <input type="text" class="search-input" placeholder="Search prompts, skills, videos...">
+                    <span class="search-shortcut">/</span>
+                </div>
+            </div>
+
+            <div class="header-actions">
+                <div class="contribute-dropdown">
+                    <button class="btn-contribute">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        <span>Contribute</span>
+                    </button>
+                    <div class="contribute-menu">
+                        <a href="#" class="contribute-menu-item prompt">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+                            </svg>
+                            Prompt
+                        </a>
+                        <a href="#" class="contribute-menu-item skill">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                            Skill
+                        </a>
+                        <a href="#" class="contribute-menu-item agent">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                            </svg>
+                            Agent
+                        </a>
+                        <a href="#" class="contribute-menu-item video">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                            </svg>
+                            Video
+                        </a>
+                        <a href="#" class="contribute-menu-item mcp">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"/>
+                            </svg>
+                            MCP Server
+                        </a>
+                    </div>
+                </div>
+                <a href="profile-page.html" class="profile-btn">WM</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- TASK NAVIGATION -->
+    <nav class="task-nav">
+        <div class="container">
+            <div class="task-nav-inner">
+                <button class="task-tab active">
+                    <svg class="task-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+                    </svg>
+                    User Story Implementation
+                </button>
+                <button class="task-tab">
+                    <svg class="task-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    Debugging & Bug Fixing
+                </button>
+                <button class="task-tab">
+                    <svg class="task-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                    </svg>
+                    Code Reviews
+                </button>
+                <button class="task-tab">
+                    <svg class="task-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    Writing Tests
+                </button>
+                <button class="task-tab">
+                    <svg class="task-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    Writing User Stories
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="container">
+        <div class="main-layout">
+            <div class="main-content">
+                <!-- CHAMPION PICKS -->
+                <section class="section-champion-picks">
+                    <div class="section-header">
+                        <div class="section-title-group">
+                            <h2 class="section-title">
+                                <svg class="section-icon" fill="currentColor" viewBox="0 0 24 24" style="color: var(--accent-amber)">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                Champion Picks
+                            </h2>
+                            <p class="section-subtitle">Hand-picked by our AI Champions</p>
+                        </div>
+                        <a href="#" class="section-link">
+                            View all
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </a>
+                    </div>
+
+                    <div class="champion-grid">
+                        <a href="prompt-detail-page.html" class="content-card-link">
+                            <article class="content-card" data-type="prompt">
+                                <div class="card-header">
+                                    <span class="content-badge prompt">Prompt</span>
+                                    <span class="champion-badge">
+                                        <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                        </svg>
+                                        Champion Pick
+                                    </span>
+                                </div>
+                                <h3 class="card-title">Vertical Slice Implementation with Claude Code</h3>
+                                <p class="card-description">A comprehensive prompt for implementing complete vertical slices using Claude Code's agentic capabilities. Includes error handling and test generation.</p>
+                                <div class="card-meta">
+                                    <div class="card-author">
+                                        <div class="author-avatar">MS</div>
+                                        <div class="author-info">
+                                            <span class="author-name">Michael Sander</span>
+                                            <span class="card-task-tag">User Story Implementation</span>
+                                        </div>
+                                    </div>
+                                    <span class="card-stats">
+                                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/>
+                                        </svg>
+                                        47
+                                    </span>
+                                </div>
+                            </article>
+                        </a>
+
+                        <a href="skill-detail-page.html" class="content-card-link">
+                            <article class="content-card" data-type="skill">
+                                <div class="card-header">
+                                    <span class="content-badge skill">Skill</span>
+                                    <span class="champion-badge">
+                                        <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                        </svg>
+                                        Champion Pick
+                                    </span>
+                                </div>
+                                <h3 class="card-title">Test Generator Subagent for .NET Projects</h3>
+                                <p class="card-description">Claude Code skill that generates comprehensive unit and integration tests for .NET 8 projects using xUnit and NSubstitute.</p>
+                                <div class="card-meta">
+                                    <div class="card-author">
+                                        <div class="author-avatar" style="background: linear-gradient(135deg, var(--accent-violet), var(--accent-rose))">JV</div>
+                                        <div class="author-info">
+                                            <span class="author-name">Jurre Vogel</span>
+                                            <span class="card-task-tag">Writing Tests</span>
+                                        </div>
+                                    </div>
+                                    <span class="card-stats">
+                                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/>
+                                        </svg>
+                                        38
+                                    </span>
+                                </div>
+                            </article>
+                        </a>
+
+                        <a href="video-detail-page.html" class="content-card-link">
+                            <article class="content-card" data-type="video">
+                                <div class="card-header">
+                                    <span class="content-badge video">Video</span>
+                                    <span class="champion-badge">
+                                        <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                        </svg>
+                                        Champion Pick
+                                    </span>
+                                </div>
+                                <h3 class="card-title">Debugging Production Issues with AI Assistance</h3>
+                                <p class="card-description">Watch how to use Claude to analyze stack traces, identify root causes, and generate fixes for complex production bugs.</p>
+                                <div class="card-meta">
+                                    <div class="card-author">
+                                        <div class="author-avatar" style="background: linear-gradient(135deg, var(--accent-amber), var(--accent-rose))">LM</div>
+                                        <div class="author-info">
+                                            <span class="author-name">Lucia Martinez</span>
+                                            <span class="card-task-tag">Debugging & Bug Fixing</span>
+                                        </div>
+                                    </div>
+                                    <span class="card-stats">
+                                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/>
+                                        </svg>
+                                        52
+                                    </span>
+                                </div>
+                            </article>
+                        </a>
+                    </div>
+                </section>
+
+                <!-- TRENDING THIS WEEK -->
+                <section class="section-trending">
+                    <div class="section-header">
+                        <div class="section-title-group">
+                            <h2 class="section-title">
+                                <svg class="section-icon" fill="currentColor" viewBox="0 0 24 24" style="color: var(--accent-rose)">
+                                    <path d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/>
+                                    <path d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z"/>
+                                </svg>
+                                Trending This Week
+                            </h2>
+                            <p class="section-subtitle">Most viewed and liked content</p>
+                        </div>
+                        <a href="#" class="section-link">
+                            View all
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </a>
+                    </div>
+
+                    <div class="trending-grid">
+                        <article class="trending-card">
+                            <div class="trending-header">
+                                <span class="trending-type prompt">Prompt</span>
+                                <span class="trending-tool">Claude Code</span>
+                            </div>
+                            <h3 class="trending-title">Code Review Checklist Generator</h3>
+                            <div class="trending-stats">
+                                <span class="trending-stat">
+                                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                    </svg>
+                                    342
+                                </span>
+                                <span class="trending-stat">
+                                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/>
+                                    </svg>
+                                    28
+                                </span>
+                            </div>
+                        </article>
+
+                        <article class="trending-card">
+                            <div class="trending-header">
+                                <span class="trending-type skill">Skill</span>
+                                <span class="trending-tool">MCP</span>
+                            </div>
+                            <h3 class="trending-title">Azure DevOps Integration Config</h3>
+                            <div class="trending-stats">
+                                <span class="trending-stat">
+                                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                    </svg>
+                                    287
+                                </span>
+                                <span class="trending-stat">
+                                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/>
+                                    </svg>
+                                    31
+                                </span>
+                            </div>
+                        </article>
+
+                        <article class="trending-card">
+                            <div class="trending-header">
+                                <span class="trending-type prompt">Prompt</span>
+                                <span class="trending-tool">GitHub Copilot</span>
+                            </div>
+                            <h3 class="trending-title">User Story to Acceptance Criteria</h3>
+                            <div class="trending-stats">
+                                <span class="trending-stat">
+                                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                    </svg>
+                                    256
+                                </span>
+                                <span class="trending-stat">
+                                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/>
+                                    </svg>
+                                    19
+                                </span>
+                            </div>
+                        </article>
+
+                        <article class="trending-card">
+                            <div class="trending-header">
+                                <span class="trending-type video">Video</span>
+                                <span class="trending-tool">Claude</span>
+                            </div>
+                            <h3 class="trending-title">Refactoring Legacy Code Safely</h3>
+                            <div class="trending-stats">
+                                <span class="trending-stat">
+                                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                    </svg>
+                                    198
+                                </span>
+                                <span class="trending-stat">
+                                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/>
+                                    </svg>
+                                    24
+                                </span>
+                            </div>
+                        </article>
+                    </div>
+                </section>
+
+                <!-- RECENTLY ADDED -->
+                <section class="section-recent">
+                    <div class="section-header">
+                        <div class="section-title-group">
+                            <h2 class="section-title">
+                                <svg class="section-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--accent-cyan)">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                Recently Added
+                            </h2>
+                            <p class="section-subtitle">Latest contributions from the community</p>
+                        </div>
+                        <a href="#" class="section-link">
+                            View all
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </a>
+                    </div>
+
+                    <div class="recent-list">
+                        <article class="recent-item">
+                            <div class="recent-type-indicator prompt"></div>
+                            <div class="recent-content">
+                                <div class="recent-header">
+                                    <h3 class="recent-title">API Error Response Analyzer</h3>
+                                    <span class="recent-time">2 hours ago</span>
+                                </div>
+                                <p class="recent-description">Analyze API error responses and suggest fixes based on common patterns. Works with REST and GraphQL APIs.</p>
+                                <div class="recent-footer">
+                                    <div class="recent-tags">
+                                        <span class="tag">Debugging</span>
+                                        <span class="tag">Claude</span>
+                                    </div>
+                                    <span class="recent-author">by <strong>Thomas de Vries</strong></span>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="recent-item">
+                            <div class="recent-type-indicator skill"></div>
+                            <div class="recent-content">
+                                <div class="recent-header">
+                                    <h3 class="recent-title">Database Migration Script Generator</h3>
+                                    <span class="recent-time">5 hours ago</span>
+                                </div>
+                                <p class="recent-description">Generate Entity Framework Core migration scripts from natural language descriptions of schema changes.</p>
+                                <div class="recent-footer">
+                                    <div class="recent-tags">
+                                        <span class="tag">User Story Implementation</span>
+                                        <span class="tag">Claude Code</span>
+                                    </div>
+                                    <span class="recent-author">by <strong>Renier Bakker</strong></span>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="recent-item">
+                            <div class="recent-type-indicator video"></div>
+                            <div class="recent-content">
+                                <div class="recent-header">
+                                    <h3 class="recent-title">Writing Better User Stories with AI</h3>
+                                    <span class="recent-time">Yesterday</span>
+                                </div>
+                                <p class="recent-description">A practical guide to using AI assistants for writing clear, testable user stories that developers love.</p>
+                                <div class="recent-footer">
+                                    <div class="recent-tags">
+                                        <span class="tag">Writing User Stories</span>
+                                        <span class="tag">ChatGPT</span>
+                                    </div>
+                                    <span class="recent-author">by <strong>Bas Kloet</strong></span>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="recent-item">
+                            <div class="recent-type-indicator prompt"></div>
+                            <div class="recent-content">
+                                <div class="recent-header">
+                                    <h3 class="recent-title">Security Review Checklist for PRs</h3>
+                                    <span class="recent-time">Yesterday</span>
+                                </div>
+                                <p class="recent-description">Automated security-focused code review prompt that checks for OWASP Top 10 vulnerabilities.</p>
+                                <div class="recent-footer">
+                                    <div class="recent-tags">
+                                        <span class="tag">Code Reviews</span>
+                                        <span class="tag">Claude</span>
+                                    </div>
+                                    <span class="recent-author">by <strong>Hans Kunz</strong></span>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+
+                    <button class="load-more-btn">Load more content</button>
+                </section>
+            </div>
+
+            <!-- SIDEBAR -->
+            <aside class="sidebar">
+                <!-- AI Goal Card -->
+                <div class="sidebar-card">
+                    <div class="sidebar-card-header goal-card-header">
+                        <h3 class="sidebar-card-title">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                            My AI Goal 2026
+                        </h3>
+                    </div>
+                    <div class="sidebar-card-body">
+                        <p class="ai-goal-quote">"Master Claude Code for implementing complete user stories with tests"</p>
+                        <button class="edit-goal-btn">
+                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                            </svg>
+                            Edit goal
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Bounties Card -->
+                <div class="sidebar-card">
+                    <div class="sidebar-card-header">
+                        <h3 class="sidebar-card-title">
+                            <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24" style="color: var(--accent-amber)">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.16-1.46-3.27-3.4h1.96c.1 1.05.82 1.87 2.65 1.87 1.96 0 2.4-.98 2.4-1.59 0-.83-.44-1.61-2.67-2.14-2.48-.6-4.18-1.62-4.18-3.67 0-1.72 1.39-2.84 3.11-3.21V4h2.67v1.95c1.86.45 2.79 1.86 2.85 3.39H14.3c-.05-1.11-.64-1.87-2.22-1.87-1.5 0-2.4.68-2.4 1.64 0 .84.65 1.39 2.67 1.91s4.18 1.39 4.18 3.91c-.01 1.83-1.38 2.83-3.12 3.16z"/>
+                            </svg>
+                            Open Bounties
+                        </h3>
+                        <span class="bounty-count">5</span>
+                    </div>
+                    <div class="sidebar-card-body">
+                        <div class="bounty-list">
+                            <div class="bounty-item">
+                                <h4 class="bounty-title">MCP config for Azure SQL Database</h4>
+                                <div class="bounty-meta">
+                                    <span class="bounty-task">Debugging</span>
+                                    <span class="bounty-points">
+                                        <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                        </svg>
+                                        50 pts
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="bounty-item">
+                                <h4 class="bounty-title">Claude Code skill for Angular test generation</h4>
+                                <div class="bounty-meta">
+                                    <span class="bounty-task">Writing Tests</span>
+                                    <span class="bounty-points">
+                                        <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                        </svg>
+                                        75 pts
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="bounty-item">
+                                <h4 class="bounty-title">Prompt for reviewing Terraform configs</h4>
+                                <div class="bounty-meta">
+                                    <span class="bounty-task">Code Reviews</span>
+                                    <span class="bounty-points">
+                                        <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                        </svg>
+                                        40 pts
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="#" class="view-all-bounties">View All Bounties</a>
+                    </div>
+                </div>
+
+                <!-- Stats Card -->
+                <div class="sidebar-card">
+                    <div class="sidebar-card-header">
+                        <h3 class="sidebar-card-title">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                            </svg>
+                            Platform Activity
+                        </h3>
+                    </div>
+                    <div class="sidebar-card-body">
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-value cyan">1,234</div>
+                                <div class="stat-label">Prompts</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value emerald">456</div>
+                                <div class="stat-label">Skills</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value violet">89</div>
+                                <div class="stat-label">Videos</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value amber">312</div>
+                                <div class="stat-label">Contributors</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-main">
+                <div class="footer-brand">
+                    <div class="footer-logo">
+                        <span class="logo-mark">RAISE</span>
+                        <span class="logo-subtitle">Knowledge Platform</span>
+                    </div>
+                    <p class="footer-description">
+                        Empowering Info Support teams to integrate AI into their daily workflow.
+                        Share what works, learn from colleagues, and accelerate your AI journey.
+                    </p>
+                </div>
+
+                <div class="footer-column">
+                    <h4>Platform</h4>
+                    <div class="footer-links">
+                        <a href="#">About</a>
+                        <a href="#">How It Works</a>
+                        <a href="#">AI Policy</a>
+                    </div>
+                </div>
+
+                <div class="footer-column">
+                    <h4>Content</h4>
+                    <div class="footer-links">
+                        <a href="#">Browse Prompts</a>
+                        <a href="#">Browse Skills</a>
+                        <a href="#">Browse Videos</a>
+                    </div>
+                </div>
+
+                <div class="footer-column">
+                    <h4>Community</h4>
+                    <div class="footer-links">
+                        <a href="#">Contributors</a>
+                        <a href="#">Leaderboard</a>
+                        <a href="#">Events</a>
+                    </div>
+                </div>
+
+                <div class="footer-column">
+                    <h4>Help</h4>
+                    <div class="footer-links">
+                        <a href="#">Getting Started</a>
+                        <a href="#">FAQ</a>
+                        <a href="#">Contact</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <span>RAISE Knowledge Platform &mdash; <a href="#">Info Support</a></span>
+                <span>Powered by the <a href="#">AISE team</a></span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Task tab interaction
+        document.querySelectorAll('.task-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.task-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+            });
+        });
+
+        // Search focus shortcut
+        document.addEventListener('keydown', (e) => {
+            if (e.key === '/' && !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
+                e.preventDefault();
+                document.querySelector('.search-input').focus();
+            }
+        });
+    </script>
+</body>
+</html>

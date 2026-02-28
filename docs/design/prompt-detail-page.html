@@ -1,0 +1,1718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vertical Slice Implementation - RAISE Knowledge Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Dark palette */
+            --bg-primary: #0a0f1a;
+            --bg-secondary: #111827;
+            --bg-card: #1a2234;
+            --bg-elevated: #232d42;
+            --bg-prompt: #0c1929;
+
+            /* Text */
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+
+            /* Accents */
+            --accent-cyan: #22d3ee;
+            --accent-cyan-dim: rgba(34, 211, 238, 0.15);
+            --accent-cyan-glow: rgba(34, 211, 238, 0.08);
+            --accent-emerald: #34d399;
+            --accent-emerald-dim: rgba(52, 211, 153, 0.15);
+            --accent-violet: #a78bfa;
+            --accent-violet-dim: rgba(167, 139, 250, 0.15);
+            --accent-amber: #fbbf24;
+            --accent-amber-dim: rgba(251, 191, 36, 0.15);
+            --accent-rose: #fb7185;
+
+            /* Borders */
+            --border-subtle: rgba(148, 163, 184, 0.1);
+            --border-medium: rgba(148, 163, 184, 0.2);
+
+            /* Gradients */
+            --gradient-cyan: linear-gradient(135deg, #22d3ee 0%, #06b6d4 100%);
+            --gradient-glow: radial-gradient(ellipse at top, rgba(34, 211, 238, 0.12) 0%, transparent 60%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Utility */
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* ============================================
+           HEADER
+        ============================================ */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(10, 15, 26, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .header-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 72px;
+            gap: 32px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+
+        .logo-mark {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 28px;
+            background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--accent-violet) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-subtitle {
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .search-container {
+            flex: 1;
+            max-width: 520px;
+            position: relative;
+        }
+
+        .search-box {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            background: var(--bg-card);
+            border: 1px solid var(--border-medium);
+            border-radius: 12px;
+            padding: 0 16px;
+            transition: all 0.2s ease;
+        }
+
+        .search-box:focus-within {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 0 3px var(--accent-cyan-dim);
+        }
+
+        .search-icon {
+            color: var(--text-muted);
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+
+        .search-input {
+            flex: 1;
+            background: none;
+            border: none;
+            padding: 14px 12px;
+            font-size: 15px;
+            color: var(--text-primary);
+            font-family: inherit;
+        }
+
+        .search-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .search-input:focus {
+            outline: none;
+        }
+
+        .search-shortcut {
+            background: var(--bg-elevated);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            color: var(--text-muted);
+            font-family: 'Outfit', monospace;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .btn-contribute {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--gradient-cyan);
+            color: var(--bg-primary);
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-contribute:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(34, 211, 238, 0.3);
+        }
+
+        /* Contribute Dropdown */
+        .contribute-dropdown {
+            position: relative;
+        }
+
+        .contribute-menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            min-width: 200px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-medium);
+            border-radius: 12px;
+            padding: 8px;
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-8px);
+            transition: all 0.2s ease;
+            z-index: 200;
+        }
+
+        .contribute-dropdown:hover .contribute-menu,
+        .contribute-dropdown:focus-within .contribute-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .contribute-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.15s ease;
+        }
+
+        .contribute-menu-item:hover {
+            background: var(--bg-elevated);
+        }
+
+        .contribute-menu-item svg {
+            width: 18px;
+            height: 18px;
+            color: var(--text-muted);
+        }
+
+        .contribute-menu-item.prompt:hover svg { color: var(--accent-cyan); }
+        .contribute-menu-item.skill:hover svg { color: var(--accent-emerald); }
+        .contribute-menu-item.agent:hover svg { color: var(--accent-violet); }
+        .contribute-menu-item.video:hover svg { color: var(--accent-rose); }
+        .contribute-menu-item.mcp:hover svg { color: var(--accent-amber); }
+
+        .profile-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--accent-violet) 0%, var(--accent-rose) 100%);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 16px;
+            color: white;
+            transition: all 0.2s ease;
+        }
+
+        .profile-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* ============================================
+           BREADCRUMB
+        ============================================ */
+        .breadcrumb {
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .breadcrumb-list {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            list-style: none;
+            font-size: 14px;
+        }
+
+        .breadcrumb-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .breadcrumb-item a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .breadcrumb-item a:hover {
+            color: var(--accent-cyan);
+        }
+
+        .breadcrumb-item.active {
+            color: var(--text-secondary);
+        }
+
+        .breadcrumb-separator {
+            color: var(--text-muted);
+        }
+
+        /* ============================================
+           MAIN LAYOUT
+        ============================================ */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 360px;
+            gap: 32px;
+            padding: 32px 0 64px;
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* ============================================
+           PROMPT HEADER SECTION
+        ============================================ */
+        .prompt-header-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            overflow: hidden;
+            animation: fadeInUp 0.4s ease forwards;
+        }
+
+        .prompt-info {
+            padding: 24px;
+        }
+
+        .prompt-title-group {
+            margin-bottom: 20px;
+        }
+
+        .prompt-badges {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .prompt-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .prompt-badge.type {
+            background: var(--accent-cyan-dim);
+            color: var(--accent-cyan);
+        }
+
+        .prompt-badge.tool {
+            background: var(--bg-elevated);
+            color: var(--text-secondary);
+        }
+
+        .prompt-badge.workflow {
+            background: var(--accent-violet-dim);
+            color: var(--accent-violet);
+        }
+
+        .prompt-badge.champion {
+            background: var(--accent-amber-dim);
+            color: var(--accent-amber);
+        }
+
+        .prompt-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.3;
+            margin-bottom: 8px;
+        }
+
+        .prompt-meta {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .prompt-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .prompt-meta-item svg {
+            width: 16px;
+            height: 16px;
+        }
+
+
+        .prompt-description {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+
+        .prompt-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            font-size: 13px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            background: var(--bg-elevated);
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .tag:hover {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+
+        .tag.workflow {
+            background: var(--accent-violet-dim);
+            color: var(--accent-violet);
+        }
+
+        /* ============================================
+           PROMPT CONTENT SECTION
+        ============================================ */
+        .prompt-content-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            overflow: hidden;
+            animation: fadeInUp 0.4s ease forwards;
+            animation-delay: 0.2s;
+            opacity: 0;
+        }
+
+        .content-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            background: var(--bg-elevated);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .content-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .content-label svg {
+            width: 18px;
+            height: 18px;
+            color: var(--accent-cyan);
+        }
+
+        .copy-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: var(--accent-cyan);
+            border: none;
+            border-radius: 10px;
+            color: var(--bg-primary);
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .copy-btn:hover {
+            background: #06b6d4;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(34, 211, 238, 0.3);
+        }
+
+        .copy-btn.copied {
+            background: var(--accent-cyan-dim);
+            color: var(--accent-cyan);
+        }
+
+        .copy-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .prompt-text-block {
+            background: var(--bg-prompt);
+            padding: 32px;
+            min-height: 200px;
+            position: relative;
+        }
+
+        .prompt-text-block::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--gradient-cyan);
+        }
+
+        .prompt-text {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 16px;
+            color: var(--text-primary);
+            line-height: 1.8;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .prompt-text::selection {
+            background: var(--accent-cyan-dim);
+            color: var(--accent-cyan);
+        }
+
+        .variable {
+            background: var(--accent-cyan-dim);
+            color: var(--accent-cyan);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 500;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+        }
+
+        /* ============================================
+           RELATED CONTENT SECTION
+        ============================================ */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .section-icon {
+            width: 20px;
+            height: 20px;
+            color: var(--accent-cyan);
+        }
+        .related-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            overflow: hidden;
+            animation: fadeInUp 0.4s ease forwards;
+            animation-delay: 0.4s;
+            opacity: 0;
+        }
+
+        .related-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .related-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            padding: 20px;
+        }
+
+        .related-card {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .related-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--border-medium);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        .related-card-badge {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+
+        .related-card-badge.prompt {
+            background: var(--accent-cyan-dim);
+            color: var(--accent-cyan);
+        }
+
+        .related-card-badge.skill {
+            background: var(--accent-emerald-dim);
+            color: var(--accent-emerald);
+        }
+
+        .related-card-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .related-card-meta {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* ============================================
+           SIDEBAR
+        ============================================ */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: sticky;
+            top: 104px;
+            height: fit-content;
+        }
+
+        .sidebar-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            overflow: hidden;
+            animation: fadeInUp 0.4s ease forwards;
+        }
+
+        .sidebar-card:nth-child(1) { animation-delay: 0.15s; opacity: 0; }
+        .sidebar-card:nth-child(2) { animation-delay: 0.2s; opacity: 0; }
+        .sidebar-card:nth-child(3) { animation-delay: 0.25s; opacity: 0; }
+
+        .sidebar-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .sidebar-card-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sidebar-card-title svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .sidebar-card-body {
+            padding: 20px;
+        }
+
+        /* Author Card */
+        .author-card {
+            text-align: center;
+        }
+
+        .author-card .sidebar-card-body {
+            padding: 24px;
+        }
+
+        .author-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-violet));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 28px;
+            color: white;
+            box-shadow: 0 8px 24px rgba(34, 211, 238, 0.2);
+        }
+
+        .author-name {
+            font-family: 'Outfit', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .author-role {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        .author-stats {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            padding: 16px 0;
+            border-top: 1px solid var(--border-subtle);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .author-stat {
+            text-align: center;
+        }
+
+        .author-stat-value {
+            font-family: 'Outfit', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .author-stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .view-profile-btn {
+            width: 100%;
+            margin-top: 16px;
+            padding: 12px;
+            background: var(--accent-cyan-dim);
+            border: none;
+            border-radius: 10px;
+            color: var(--accent-cyan);
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .view-profile-btn:hover {
+            background: rgba(34, 211, 238, 0.25);
+        }
+
+        /* Version History Card */
+        .version-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .version-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px;
+            background: var(--bg-elevated);
+            border-radius: 10px;
+        }
+
+        .version-item.current {
+            border: 1px solid var(--accent-cyan);
+            background: var(--accent-cyan-dim);
+        }
+
+        .version-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent-cyan);
+            flex-shrink: 0;
+        }
+
+        .version-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .version-date {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .version-changes {
+            font-size: 13px;
+            color: var(--text-secondary);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .version-badge {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: var(--accent-cyan);
+            color: var(--bg-primary);
+        }
+
+        /* Compatibility Card */
+        .tool-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: var(--bg-elevated);
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .tool-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .tool-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: var(--bg-card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .tool-name {
+            flex: 1;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .tool-status {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .tool-status.optimized {
+            background: var(--accent-cyan-dim);
+            color: var(--accent-cyan);
+        }
+
+        .tool-status.compatible {
+            background: var(--accent-emerald-dim);
+            color: var(--accent-emerald);
+        }
+
+        .tool-status.limited {
+            background: var(--accent-amber-dim);
+            color: var(--accent-amber);
+        }
+
+        /* Engagement Card */
+        .rating-section {
+            text-align: center;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .rating-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .star-rating {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .star {
+            width: 28px;
+            height: 28px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .star:hover,
+        .star.active {
+            color: var(--accent-amber);
+            transform: scale(1.15);
+        }
+
+        .rating-count {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 10px;
+        }
+
+        .engagement-actions {
+            padding-top: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .engagement-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .engagement-btn:hover {
+            background: var(--bg-card);
+            border-color: var(--border-medium);
+            color: var(--text-primary);
+        }
+
+        .engagement-btn.active {
+            background: var(--accent-cyan-dim);
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+        }
+
+        .engagement-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* ============================================
+           FOOTER
+        ============================================ */
+        .footer {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-subtle);
+            margin-top: 64px;
+        }
+
+        .footer-main {
+            display: grid;
+            grid-template-columns: 2fr repeat(4, 1fr);
+            gap: 48px;
+            padding: 64px 0 48px;
+        }
+
+        .footer-brand {
+            max-width: 280px;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .footer-logo .logo-mark {
+            font-size: 24px;
+        }
+
+        .footer-description {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.7;
+        }
+
+        .footer-column h4 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-cyan);
+        }
+
+        .footer-bottom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 24px 0;
+            border-top: 1px solid var(--border-subtle);
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .footer-bottom a {
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+
+        .footer-bottom a:hover {
+            color: var(--accent-cyan);
+        }
+
+        /* ============================================
+           ANIMATIONS
+        ============================================ */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.6;
+            }
+        }
+
+        .variable {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        /* ============================================
+           RESPONSIVE
+        ============================================ */
+        @media (max-width: 1200px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: static;
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+
+            .author-card {
+                grid-column: span 2;
+            }
+
+            .footer-main {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 32px;
+            }
+
+            .footer-brand {
+                grid-column: span 2;
+                max-width: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-inner {
+                height: auto;
+                padding: 16px 0;
+                flex-wrap: wrap;
+            }
+
+            .search-container {
+                order: 3;
+                max-width: none;
+                width: 100%;
+                margin-top: 16px;
+            }
+
+            .btn-contribute span {
+                display: none;
+            }
+
+            .prompt-title {
+                font-size: 24px;
+            }
+
+            .prompt-meta {
+                flex-wrap: wrap;
+            }
+
+            .related-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                grid-template-columns: 1fr;
+            }
+
+            .author-card {
+                grid-column: span 1;
+            }
+
+            .footer-main {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-brand {
+                grid-column: span 1;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <header class="header">
+        <div class="container header-inner">
+            <a href="homepage.html" class="logo">
+                <span class="logo-mark">RAISE</span>
+                <span class="logo-subtitle">Knowledge Platform</span>
+            </a>
+
+            <div class="search-container">
+                <div class="search-box">
+                    <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                    <input type="text" class="search-input" placeholder="Search prompts, skills, videos...">
+                    <span class="search-shortcut">/</span>
+                </div>
+            </div>
+
+            <div class="header-actions">
+                <div class="contribute-dropdown">
+                    <button class="btn-contribute">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        <span>Contribute</span>
+                    </button>
+                    <div class="contribute-menu">
+                        <a href="#" class="contribute-menu-item prompt">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+                            </svg>
+                            Prompt
+                        </a>
+                        <a href="#" class="contribute-menu-item skill">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                            Skill
+                        </a>
+                        <a href="#" class="contribute-menu-item agent">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                            </svg>
+                            Agent
+                        </a>
+                        <a href="#" class="contribute-menu-item video">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                            </svg>
+                            Video
+                        </a>
+                        <a href="#" class="contribute-menu-item mcp">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"/>
+                            </svg>
+                            MCP Server
+                        </a>
+                    </div>
+                </div>
+                <a href="profile-page.html" class="profile-btn">WM</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- BREADCRUMB -->
+    <nav class="breadcrumb">
+        <div class="container">
+            <ol class="breadcrumb-list">
+                <li class="breadcrumb-item">
+                    <a href="homepage.html">Home</a>
+                </li>
+                <li class="breadcrumb-separator">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="#">Prompts</a>
+                </li>
+                <li class="breadcrumb-separator">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </li>
+                <li class="breadcrumb-item active">Vertical Slice Implementation</li>
+            </ol>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="container">
+        <div class="main-layout">
+            <div class="main-content">
+                <!-- PROMPT HEADER -->
+                <section class="prompt-header-section">
+                    <div class="prompt-info">
+                        <div class="prompt-title-group">
+                            <div class="prompt-badges">
+                                <span class="prompt-badge type">
+                                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                    </svg>
+                                    Prompt
+                                </span>
+                                <span class="prompt-badge tool">Claude Code</span>
+                                <span class="prompt-badge champion">
+                                    <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                    </svg>
+                                    Champion Pick
+                                </span>
+                            </div>
+                            <h1 class="prompt-title">Vertical Slice Implementation with Claude Code</h1>
+                            <div class="prompt-meta">
+                                <span class="prompt-meta-item">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                    </svg>
+                                    1,247 views
+                                </span>
+                                <span class="prompt-meta-item">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    v1.2.0
+                                </span>
+                                <span class="prompt-meta-item">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                    </svg>
+                                    Updated Jan 15, 2026
+                                </span>
+                            </div>
+                        </div>
+
+                        <p class="prompt-description">
+                            A comprehensive prompt for implementing complete vertical slices in .NET applications using the Wolverine framework. This prompt guides Claude Code through the entire feature implementation process, from creating request/response models to writing tests, ensuring consistency across your codebase.
+                        </p>
+
+                        <div class="prompt-tags">
+                            <span class="tag workflow">User Story Implementation</span>
+                            <span class="tag">Claude Code</span>
+                            <span class="tag">.NET</span>
+                            <span class="tag">Wolverine</span>
+                            <span class="tag">Vertical Slice</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- PROMPT CONTENT -->
+                <section class="prompt-content-section">
+                    <div class="content-header">
+                        <span class="content-label">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            Prompt Content
+                        </span>
+                        <button class="copy-btn" id="copyBtn">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                            </svg>
+                            Copy Prompt
+                        </button>
+                    </div>
+                    <div class="prompt-text-block">
+                        <div class="prompt-text" id="promptText">You are implementing a vertical slice for a .NET application using the Wolverine framework with a vertical slice architecture. Your task is to implement a complete feature from API endpoint to database.
+
+<span class="variable">[USER_STORY]</span>
+
+Follow these implementation guidelines:
+
+1. **Create the Request/Response models**
+   - Define strongly-typed request and response records
+   - Include all necessary validation attributes
+   - Use nullable reference types appropriately
+
+2. **Implement the Handler**
+   - Create a Wolverine handler in the appropriate feature folder
+   - Follow the pattern: Features/<span class="variable">[FEATURE_NAME]</span>/<span class="variable">[ACTION]</span>Handler.cs
+   - Use dependency injection for repositories and services
+   - Include proper error handling and logging
+
+3. **Add the API Endpoint**
+   - Map the endpoint in the appropriate endpoint group
+   - Use proper HTTP methods (GET, POST, PUT, DELETE)
+   - Include OpenAPI documentation attributes
+   - Add authorization attributes if needed
+
+4. **Create Database Migrations (if needed)**
+   - Generate EF Core migrations for schema changes
+   - Review the migration before applying
+
+5. **Write Tests**
+   - Create unit tests for the handler logic
+   - Create integration tests for the full slice
+   - Use xUnit and NSubstitute for mocking
+
+After implementation, verify:
+- The code compiles without warnings
+- All tests pass
+- The API responds correctly when called
+
+<span class="variable">[ADDITIONAL_CONTEXT]</span></div>
+                    </div>
+                </section>
+
+                <!-- RELATED CONTENT -->
+                <section class="related-section">
+                    <div class="related-header">
+                        <div class="section-header" style="margin-bottom: 0;">
+                            <svg class="section-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                            </svg>
+                            <h2 class="section-title">Related Content</h2>
+                        </div>
+                    </div>
+
+                    <div class="related-grid">
+                        <article class="related-card">
+                            <span class="related-card-badge prompt">Prompt</span>
+                            <h3 class="related-card-title">Unit Test Generator for .NET Handlers</h3>
+                            <p class="related-card-meta">234 views - By Jurre Vogel</p>
+                        </article>
+
+                        <article class="related-card">
+                            <span class="related-card-badge skill">Skill</span>
+                            <h3 class="related-card-title">Test Generator Subagent for .NET</h3>
+                            <p class="related-card-meta">456 views - By Michael Sander</p>
+                        </article>
+
+                        <article class="related-card">
+                            <span class="related-card-badge prompt">Prompt</span>
+                            <h3 class="related-card-title">API Endpoint Documentation Writer</h3>
+                            <p class="related-card-meta">189 views - By Thomas de Vries</p>
+                        </article>
+
+                        <article class="related-card">
+                            <span class="related-card-badge prompt">Prompt</span>
+                            <h3 class="related-card-title">Database Migration Review Checklist</h3>
+                            <p class="related-card-meta">167 views - By Lucia Martinez</p>
+                        </article>
+                    </div>
+                </section>
+            </div>
+
+            <!-- SIDEBAR -->
+            <aside class="sidebar">
+                <!-- Author Card -->
+                <div class="sidebar-card author-card">
+                    <div class="sidebar-card-body">
+                        <div class="author-avatar">MS</div>
+                        <h3 class="author-name">Michael Sander</h3>
+                        <p class="author-role">Senior Software Engineer</p>
+                        <div class="author-stats">
+                            <div class="author-stat">
+                                <div class="author-stat-value">24</div>
+                                <div class="author-stat-label">Prompts</div>
+                            </div>
+                            <div class="author-stat">
+                                <div class="author-stat-value">8</div>
+                                <div class="author-stat-label">Skills</div>
+                            </div>
+                        </div>
+                        <button class="view-profile-btn">View Profile</button>
+                    </div>
+                </div>
+
+                <!-- Engagement Card -->
+                <div class="sidebar-card">
+                    <div class="sidebar-card-header">
+                        <h3 class="sidebar-card-title">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+                            </svg>
+                            Engagement
+                        </h3>
+                    </div>
+                    <div class="sidebar-card-body">
+                        <div class="rating-section">
+                            <p class="rating-label">Rate this prompt</p>
+                            <div class="star-rating">
+                                <svg class="star active" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <svg class="star active" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <svg class="star active" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <svg class="star active" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <svg class="star" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                            </div>
+                            <p class="rating-count">4.2 average from 47 ratings</p>
+                        </div>
+                        <div class="engagement-actions">
+                            <button class="engagement-btn" id="bookmarkBtn">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+                                </svg>
+                                Save to Collection
+                            </button>
+                            <button class="engagement-btn">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+                                </svg>
+                                Share on Teams
+                            </button>
+                            <button class="engagement-btn">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                </svg>
+                                Copy Link
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Version History Card -->
+                <div class="sidebar-card">
+                    <div class="sidebar-card-header">
+                        <h3 class="sidebar-card-title">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            Version History
+                        </h3>
+                    </div>
+                    <div class="sidebar-card-body">
+                        <div class="version-list">
+                            <div class="version-item current">
+                                <div class="version-number">v1.2.0</div>
+                                <div class="version-info">
+                                    <div class="version-date">Jan 15, 2026 <span class="version-badge">Latest</span></div>
+                                    <div class="version-changes">Added OpenAPI documentation step, improved test guidance</div>
+                                </div>
+                            </div>
+                            <div class="version-item">
+                                <div class="version-number">v1.1.0</div>
+                                <div class="version-info">
+                                    <div class="version-date">Dec 20, 2025</div>
+                                    <div class="version-changes">Added database migration guidelines</div>
+                                </div>
+                            </div>
+                            <div class="version-item">
+                                <div class="version-number">v1.0.0</div>
+                                <div class="version-info">
+                                    <div class="version-date">Nov 28, 2025</div>
+                                    <div class="version-changes">Initial release with vertical slice workflow</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Tool Compatibility -->
+                <div class="sidebar-card">
+                    <div class="sidebar-card-header">
+                        <h3 class="sidebar-card-title">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                            </svg>
+                            AI Tool Compatibility
+                        </h3>
+                    </div>
+                    <div class="sidebar-card-body">
+                        <div class="tool-item">
+                            <div class="tool-icon">CC</div>
+                            <span class="tool-name">Claude Code</span>
+                            <span class="tool-status optimized">Optimized</span>
+                        </div>
+                        <div class="tool-item">
+                            <div class="tool-icon">C</div>
+                            <span class="tool-name">Claude</span>
+                            <span class="tool-status compatible">Compatible</span>
+                        </div>
+                        <div class="tool-item">
+                            <div class="tool-icon">GP</div>
+                            <span class="tool-name">GitHub Copilot</span>
+                            <span class="tool-status limited">Limited</span>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-main">
+                <div class="footer-brand">
+                    <div class="footer-logo">
+                        <span class="logo-mark">RAISE</span>
+                        <span class="logo-subtitle">Knowledge Platform</span>
+                    </div>
+                    <p class="footer-description">
+                        Empowering Info Support teams to integrate AI into their daily workflow.
+                        Share what works, learn from colleagues, and accelerate your AI journey.
+                    </p>
+                </div>
+
+                <div class="footer-column">
+                    <h4>Platform</h4>
+                    <div class="footer-links">
+                        <a href="#">About</a>
+                        <a href="#">How It Works</a>
+                        <a href="#">AI Policy</a>
+                    </div>
+                </div>
+
+                <div class="footer-column">
+                    <h4>Content</h4>
+                    <div class="footer-links">
+                        <a href="#">Browse Prompts</a>
+                        <a href="#">Browse Skills</a>
+                        <a href="#">Browse Videos</a>
+                    </div>
+                </div>
+
+                <div class="footer-column">
+                    <h4>Community</h4>
+                    <div class="footer-links">
+                        <a href="#">Contributors</a>
+                        <a href="#">Leaderboard</a>
+                        <a href="#">Events</a>
+                    </div>
+                </div>
+
+                <div class="footer-column">
+                    <h4>Help</h4>
+                    <div class="footer-links">
+                        <a href="#">Getting Started</a>
+                        <a href="#">FAQ</a>
+                        <a href="#">Contact</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <span>RAISE Knowledge Platform &mdash; <a href="#">Info Support</a></span>
+                <span>Powered by the <a href="#">AISE team</a></span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Copy button functionality
+        const copyBtn = document.getElementById('copyBtn');
+        const promptText = document.getElementById('promptText');
+
+        copyBtn.addEventListener('click', async () => {
+            // Get text content without HTML tags but preserve structure
+            const textContent = promptText.innerText;
+
+            try {
+                await navigator.clipboard.writeText(textContent);
+                copyBtn.innerHTML = `
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    Copied!
+                `;
+                copyBtn.classList.add('copied');
+
+                setTimeout(() => {
+                    copyBtn.innerHTML = `
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                        </svg>
+                        Copy Prompt
+                    `;
+                    copyBtn.classList.remove('copied');
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy:', err);
+            }
+        });
+
+        // Bookmark button toggle
+        const bookmarkBtn = document.getElementById('bookmarkBtn');
+        bookmarkBtn.addEventListener('click', () => {
+            bookmarkBtn.classList.toggle('active');
+            const isSaved = bookmarkBtn.classList.contains('active');
+            bookmarkBtn.innerHTML = isSaved ? `
+                <svg fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"/>
+                </svg>
+                Saved to Collection
+            ` : `
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+                </svg>
+                Save to Collection
+            `;
+        });
+
+        // Star rating interaction
+        const stars = document.querySelectorAll('.star');
+        stars.forEach((star, index) => {
+            star.addEventListener('mouseenter', () => {
+                stars.forEach((s, i) => {
+                    s.classList.toggle('active', i <= index);
+                });
+            });
+
+            star.addEventListener('click', () => {
+                const rating = index + 1;
+                console.log('Rating:', rating);
+                // Would submit rating to API
+            });
+        });
+
+        // Search focus shortcut
+        document.addEventListener('keydown', (e) => {
+            if (e.key === '/' && !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
+                e.preventDefault();
+                document.querySelector('.search-input').focus();
+            }
+        });
+    </script>
+</body>
+</html>

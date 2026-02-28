@@ -1,0 +1,1802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results - RAISE Knowledge Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Dark palette */
+            --bg-primary: #0a0f1a;
+            --bg-secondary: #111827;
+            --bg-card: #1a2234;
+            --bg-elevated: #232d42;
+
+            /* Text */
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+
+            /* Accents */
+            --accent-cyan: #22d3ee;
+            --accent-cyan-dim: rgba(34, 211, 238, 0.15);
+            --accent-emerald: #34d399;
+            --accent-emerald-dim: rgba(52, 211, 153, 0.15);
+            --accent-violet: #a78bfa;
+            --accent-violet-dim: rgba(167, 139, 250, 0.15);
+            --accent-amber: #fbbf24;
+            --accent-amber-dim: rgba(251, 191, 36, 0.15);
+            --accent-rose: #fb7185;
+            --accent-rose-dim: rgba(251, 113, 133, 0.15);
+
+            /* Borders */
+            --border-subtle: rgba(148, 163, 184, 0.1);
+            --border-medium: rgba(148, 163, 184, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* ============================================
+           HEADER (shared)
+        ============================================ */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(10, 15, 26, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .header-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 72px;
+            gap: 32px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+
+        .logo-mark {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 28px;
+            background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--accent-violet) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-subtitle {
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .search-container {
+            flex: 1;
+            max-width: 520px;
+            position: relative;
+        }
+
+        .search-box {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            background: var(--bg-card);
+            border: 1px solid var(--border-medium);
+            border-radius: 12px;
+            padding: 0 16px;
+            transition: all 0.2s ease;
+        }
+
+        .search-box:focus-within {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 0 3px var(--accent-cyan-dim);
+        }
+
+        .search-icon {
+            color: var(--text-muted);
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+
+        .search-input {
+            flex: 1;
+            background: none;
+            border: none;
+            padding: 14px 12px;
+            font-size: 15px;
+            color: var(--text-primary);
+            font-family: inherit;
+        }
+
+        .search-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .search-input:focus {
+            outline: none;
+        }
+
+        .search-clear {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .search-clear:hover {
+            background: var(--bg-elevated);
+            color: var(--text-secondary);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .btn-contribute {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, var(--accent-cyan) 0%, #06b6d4 100%);
+            color: var(--bg-primary);
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-contribute:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(34, 211, 238, 0.3);
+        }
+
+        /* Contribute Dropdown */
+        .contribute-dropdown {
+            position: relative;
+        }
+
+        .contribute-menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            min-width: 200px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-medium);
+            border-radius: 12px;
+            padding: 8px;
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-8px);
+            transition: all 0.2s ease;
+            z-index: 200;
+        }
+
+        .contribute-dropdown:hover .contribute-menu,
+        .contribute-dropdown:focus-within .contribute-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .contribute-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.15s ease;
+        }
+
+        .contribute-menu-item:hover {
+            background: var(--bg-elevated);
+        }
+
+        .contribute-menu-item svg {
+            width: 18px;
+            height: 18px;
+            color: var(--text-muted);
+        }
+
+        .contribute-menu-item.prompt:hover svg { color: var(--accent-cyan); }
+        .contribute-menu-item.skill:hover svg { color: var(--accent-emerald); }
+        .contribute-menu-item.agent:hover svg { color: var(--accent-violet); }
+        .contribute-menu-item.video:hover svg { color: var(--accent-rose); }
+        .contribute-menu-item.mcp:hover svg { color: var(--accent-amber); }
+
+        .profile-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--accent-violet) 0%, var(--accent-rose) 100%);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 16px;
+            color: white;
+            transition: all 0.2s ease;
+        }
+
+        .profile-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* ============================================
+           SEARCH RESULTS HEADER
+        ============================================ */
+        .search-results-header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 32px 0;
+        }
+
+        .search-query-info {
+            margin-bottom: 24px;
+        }
+
+        .search-query-label {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .search-query-text {
+            font-family: 'Outfit', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .search-query-text .query {
+            color: var(--accent-cyan);
+        }
+
+        .results-count {
+            font-size: 16px;
+            color: var(--text-secondary);
+            font-weight: 400;
+            margin-left: 8px;
+        }
+
+        /* ============================================
+           FILTERS BAR
+        ============================================ */
+        .filters-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-label {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .filter-chips {
+            display: flex;
+            gap: 8px;
+        }
+
+        .filter-chip {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-medium);
+            border-radius: 20px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .filter-chip:hover {
+            background: var(--bg-elevated);
+            border-color: var(--text-muted);
+        }
+
+        .filter-chip.active {
+            background: var(--accent-cyan-dim);
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+        }
+
+        .filter-chip.active.prompt {
+            background: var(--accent-cyan-dim);
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+        }
+
+        .filter-chip.active.skill {
+            background: var(--accent-emerald-dim);
+            border-color: var(--accent-emerald);
+            color: var(--accent-emerald);
+        }
+
+        .filter-chip.active.video {
+            background: var(--accent-violet-dim);
+            border-color: var(--accent-violet);
+            color: var(--accent-violet);
+        }
+
+        .filter-chip svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .filter-divider {
+            width: 1px;
+            height: 24px;
+            background: var(--border-medium);
+            margin: 0 8px;
+        }
+
+        .filter-dropdown {
+            position: relative;
+        }
+
+        .filter-dropdown-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-medium);
+            border-radius: 10px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .filter-dropdown-btn:hover {
+            background: var(--bg-elevated);
+            border-color: var(--text-muted);
+        }
+
+        .clear-filters {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            background: none;
+            border: none;
+            font-size: 13px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            margin-left: auto;
+        }
+
+        .clear-filters:hover {
+            color: var(--accent-rose);
+        }
+
+        /* ============================================
+           MAIN LAYOUT
+        ============================================ */
+        .search-layout {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 32px;
+            padding: 32px 0 64px;
+        }
+
+        /* ============================================
+           SIDEBAR FILTERS
+        ============================================ */
+        .filters-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            position: sticky;
+            top: 104px;
+            height: fit-content;
+        }
+
+        .filter-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .filter-section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .filter-section-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .filter-section-clear {
+            font-size: 12px;
+            color: var(--text-muted);
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .filter-section-clear:hover {
+            color: var(--accent-cyan);
+        }
+
+        .filter-section-body {
+            padding: 12px;
+        }
+
+        .filter-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .filter-option:hover {
+            background: var(--bg-elevated);
+        }
+
+        .filter-checkbox {
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--border-medium);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .filter-option.selected .filter-checkbox {
+            background: var(--accent-cyan);
+            border-color: var(--accent-cyan);
+        }
+
+        .filter-checkbox svg {
+            width: 12px;
+            height: 12px;
+            color: var(--bg-primary);
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .filter-option.selected .filter-checkbox svg {
+            opacity: 1;
+        }
+
+        .filter-option-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            flex: 1;
+        }
+
+        .filter-option.selected .filter-option-label {
+            color: var(--text-primary);
+        }
+
+        .filter-option-count {
+            font-size: 12px;
+            color: var(--text-muted);
+            background: var(--bg-elevated);
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .filter-option-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 3px;
+            flex-shrink: 0;
+        }
+
+        .filter-option-dot.prompt { background: var(--accent-cyan); }
+        .filter-option-dot.skill { background: var(--accent-emerald); }
+        .filter-option-dot.video { background: var(--accent-violet); }
+
+        /* ============================================
+           SEARCH RESULTS
+        ============================================ */
+        .search-results {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .results-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .results-info {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .results-info strong {
+            color: var(--text-secondary);
+        }
+
+        .sort-dropdown {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sort-label {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .sort-select {
+            background: var(--bg-card);
+            border: 1px solid var(--border-medium);
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-family: inherit;
+            cursor: pointer;
+            appearance: none;
+            padding-right: 32px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2364748b' viewBox='0 0 24 24'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+        }
+
+        .sort-select:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+        }
+
+        .results-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* Result Card */
+        .result-card {
+            display: flex;
+            gap: 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .result-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            border-radius: 16px 0 0 16px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .result-card[data-type="prompt"]::before {
+            background: var(--accent-cyan);
+        }
+
+        .result-card[data-type="skill"]::before {
+            background: var(--accent-emerald);
+        }
+
+        .result-card[data-type="video"]::before {
+            background: var(--accent-violet);
+        }
+
+        .result-card:hover {
+            border-color: var(--border-medium);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        .result-card:hover::before {
+            opacity: 1;
+        }
+
+        .result-type-badge {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 12px;
+            background: var(--bg-elevated);
+            border-radius: 12px;
+            min-width: 80px;
+        }
+
+        .result-type-icon {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .result-type-icon.prompt { color: var(--accent-cyan); }
+        .result-type-icon.skill { color: var(--accent-emerald); }
+        .result-type-icon.video { color: var(--accent-violet); }
+
+        .result-type-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .result-type-label.prompt { color: var(--accent-cyan); }
+        .result-type-label.skill { color: var(--accent-emerald); }
+        .result-type-label.video { color: var(--accent-violet); }
+
+        .result-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .result-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 8px;
+        }
+
+        .result-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 1.4;
+        }
+
+        .result-title mark {
+            background: var(--accent-cyan-dim);
+            color: var(--accent-cyan);
+            padding: 0 2px;
+            border-radius: 2px;
+        }
+
+        .result-bookmark {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .result-bookmark:hover {
+            color: var(--accent-amber);
+        }
+
+        .result-bookmark.saved {
+            color: var(--accent-amber);
+        }
+
+        .result-description {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 16px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .result-description mark {
+            background: var(--accent-cyan-dim);
+            color: var(--accent-cyan);
+            padding: 0 2px;
+            border-radius: 2px;
+        }
+
+        .result-meta {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .result-tags {
+            display: flex;
+            gap: 8px;
+        }
+
+        .result-tag {
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            background: var(--bg-elevated);
+            color: var(--text-secondary);
+        }
+
+        .result-tag.task {
+            background: var(--accent-amber-dim);
+            color: var(--accent-amber);
+        }
+
+        .result-tag.tool {
+            background: var(--bg-elevated);
+            color: var(--text-muted);
+        }
+
+        .result-author {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .result-author-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            background: linear-gradient(135deg, var(--accent-emerald), var(--accent-cyan));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 10px;
+            color: var(--bg-primary);
+        }
+
+        .result-stats {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-left: auto;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .result-stat {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* ============================================
+           PAGINATION
+        ============================================ */
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 32px;
+        }
+
+        .pagination-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
+            color: var(--text-secondary);
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .pagination-btn:hover {
+            background: var(--bg-elevated);
+            border-color: var(--border-medium);
+        }
+
+        .pagination-btn.active {
+            background: var(--accent-cyan);
+            border-color: var(--accent-cyan);
+            color: var(--bg-primary);
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination-ellipsis {
+            color: var(--text-muted);
+            padding: 0 8px;
+        }
+
+        /* ============================================
+           NO RESULTS STATE
+        ============================================ */
+        .no-results {
+            text-align: center;
+            padding: 64px 32px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+        }
+
+        .no-results-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 24px;
+            color: var(--text-muted);
+            opacity: 0.5;
+        }
+
+        .no-results-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .no-results-description {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .no-results-suggestions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .no-results-suggestion {
+            font-size: 14px;
+            color: var(--accent-cyan);
+            text-decoration: none;
+            transition: opacity 0.2s ease;
+        }
+
+        .no-results-suggestion:hover {
+            opacity: 0.8;
+        }
+
+        /* ============================================
+           FOOTER
+        ============================================ */
+        .footer {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-subtle);
+            margin-top: 64px;
+        }
+
+        .footer-main {
+            display: grid;
+            grid-template-columns: 2fr repeat(4, 1fr);
+            gap: 48px;
+            padding: 64px 0 48px;
+        }
+
+        .footer-brand {
+            max-width: 280px;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .footer-logo .logo-mark {
+            font-size: 24px;
+        }
+
+        .footer-description {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.7;
+        }
+
+        .footer-column h4 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-cyan);
+        }
+
+        .footer-bottom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 24px 0;
+            border-top: 1px solid var(--border-subtle);
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .footer-bottom a {
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+
+        .footer-bottom a:hover {
+            color: var(--accent-cyan);
+        }
+
+        /* ============================================
+           ANIMATIONS
+        ============================================ */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-card {
+            animation: fadeInUp 0.4s ease forwards;
+        }
+
+        .result-card:nth-child(1) { animation-delay: 0.05s; }
+        .result-card:nth-child(2) { animation-delay: 0.1s; }
+        .result-card:nth-child(3) { animation-delay: 0.15s; }
+        .result-card:nth-child(4) { animation-delay: 0.2s; }
+        .result-card:nth-child(5) { animation-delay: 0.25s; }
+
+        /* ============================================
+           RESPONSIVE
+        ============================================ */
+        @media (max-width: 1024px) {
+            .search-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .filters-sidebar {
+                position: static;
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 16px;
+            }
+
+            .footer-main {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 32px;
+            }
+
+            .footer-brand {
+                grid-column: span 2;
+                max-width: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-inner {
+                height: auto;
+                padding: 16px 0;
+                flex-wrap: wrap;
+            }
+
+            .search-container {
+                order: 3;
+                max-width: none;
+                width: 100%;
+                margin-top: 16px;
+            }
+
+            .btn-contribute span {
+                display: none;
+            }
+
+            .search-query-text {
+                font-size: 24px;
+            }
+
+            .filters-bar {
+                overflow-x: auto;
+                padding-bottom: 8px;
+                flex-wrap: nowrap;
+            }
+
+            .filter-divider {
+                display: none;
+            }
+
+            .filters-sidebar {
+                grid-template-columns: 1fr;
+            }
+
+            .result-card {
+                flex-direction: column;
+            }
+
+            .result-type-badge {
+                flex-direction: row;
+                min-width: auto;
+                padding: 8px 12px;
+            }
+
+            .result-meta {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .result-stats {
+                margin-left: 0;
+            }
+
+            .footer-main {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-brand {
+                grid-column: span 1;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <header class="header">
+        <div class="container header-inner">
+            <a href="homepage.html" class="logo">
+                <span class="logo-mark">RAISE</span>
+                <span class="logo-subtitle">Knowledge Platform</span>
+            </a>
+
+            <div class="search-container">
+                <div class="search-box">
+                    <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                    <input type="text" class="search-input" value="code review" placeholder="Search prompts, skills, videos...">
+                    <button class="search-clear">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="header-actions">
+                <div class="contribute-dropdown">
+                    <button class="btn-contribute">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        <span>Contribute</span>
+                    </button>
+                    <div class="contribute-menu">
+                        <a href="#" class="contribute-menu-item prompt">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+                            </svg>
+                            Prompt
+                        </a>
+                        <a href="#" class="contribute-menu-item skill">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                            Skill
+                        </a>
+                        <a href="#" class="contribute-menu-item agent">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                            </svg>
+                            Agent
+                        </a>
+                        <a href="#" class="contribute-menu-item video">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                            </svg>
+                            Video
+                        </a>
+                        <a href="#" class="contribute-menu-item mcp">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"/>
+                            </svg>
+                            MCP Server
+                        </a>
+                    </div>
+                </div>
+                <a href="profile-page.html" class="profile-btn">WM</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- SEARCH RESULTS HEADER -->
+    <section class="search-results-header">
+        <div class="container">
+            <div class="search-query-info">
+                <p class="search-query-label">Search results for</p>
+                <h1 class="search-query-text">
+                    "<span class="query">code review</span>"
+                    <span class="results-count">24 results</span>
+                </h1>
+            </div>
+
+            <div class="filters-bar">
+                <div class="filter-group">
+                    <span class="filter-label">Type:</span>
+                    <div class="filter-chips">
+                        <button class="filter-chip active">All</button>
+                        <button class="filter-chip prompt">
+                            <span class="filter-option-dot prompt"></span>
+                            Prompts
+                        </button>
+                        <button class="filter-chip skill">
+                            <span class="filter-option-dot skill"></span>
+                            Skills
+                        </button>
+                        <button class="filter-chip video">
+                            <span class="filter-option-dot video"></span>
+                            Videos
+                        </button>
+                    </div>
+                </div>
+
+                <div class="filter-divider"></div>
+
+                <div class="filter-group">
+                    <span class="filter-label">Task:</span>
+                    <div class="filter-dropdown">
+                        <button class="filter-dropdown-btn">
+                            All Tasks
+                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <span class="filter-label">Tool:</span>
+                    <div class="filter-dropdown">
+                        <button class="filter-dropdown-btn">
+                            All Tools
+                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <button class="clear-filters">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                    Clear filters
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- MAIN CONTENT -->
+    <main class="container">
+        <div class="search-layout">
+            <!-- SIDEBAR FILTERS -->
+            <aside class="filters-sidebar">
+                <!-- Content Type Filter -->
+                <div class="filter-section">
+                    <div class="filter-section-header">
+                        <h3 class="filter-section-title">Content Type</h3>
+                        <button class="filter-section-clear">Clear</button>
+                    </div>
+                    <div class="filter-section-body">
+                        <div class="filter-option selected">
+                            <div class="filter-checkbox">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                                </svg>
+                            </div>
+                            <span class="filter-option-dot prompt"></span>
+                            <span class="filter-option-label">Prompts</span>
+                            <span class="filter-option-count">14</span>
+                        </div>
+                        <div class="filter-option selected">
+                            <div class="filter-checkbox">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                                </svg>
+                            </div>
+                            <span class="filter-option-dot skill"></span>
+                            <span class="filter-option-label">Skills</span>
+                            <span class="filter-option-count">6</span>
+                        </div>
+                        <div class="filter-option selected">
+                            <div class="filter-checkbox">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                                </svg>
+                            </div>
+                            <span class="filter-option-dot video"></span>
+                            <span class="filter-option-label">Videos</span>
+                            <span class="filter-option-count">4</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Task Filter -->
+                <div class="filter-section">
+                    <div class="filter-section-header">
+                        <h3 class="filter-section-title">Task</h3>
+                        <button class="filter-section-clear">Clear</button>
+                    </div>
+                    <div class="filter-section-body">
+                        <div class="filter-option selected">
+                            <div class="filter-checkbox">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                                </svg>
+                            </div>
+                            <span class="filter-option-label">Code Reviews</span>
+                            <span class="filter-option-count">18</span>
+                        </div>
+                        <div class="filter-option">
+                            <div class="filter-checkbox">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                                </svg>
+                            </div>
+                            <span class="filter-option-label">User Story Implementation</span>
+                            <span class="filter-option-count">3</span>
+                        </div>
+                        <div class="filter-option">
+                            <div class="filter-checkbox">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                                </svg>
+                            </div>
+                            <span class="filter-option-label">Writing Tests</span>
+                            <span class="filter-option-count">2</span>
+                        </div>
+                        <div class="filter-option">
+                            <div class="filter-checkbox">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                                </svg>
+                            </div>
+                            <span class="filter-option-label">Debugging & Bug Fixing</span>
+                            <span class="filter-option-count">1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Tool Filter -->
+                <div class="filter-section">
+                    <div class="filter-section-header">
+                        <h3 class="filter-section-title">AI Tool</h3>
+                        <button class="filter-section-clear">Clear</button>
+                    </div>
+                    <div class="filter-section-body">
+                        <div class="filter-option">
+                            <div class="filter-checkbox">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                                </svg>
+                            </div>
+                            <span class="filter-option-label">Claude Code</span>
+                            <span class="filter-option-count">9</span>
+                        </div>
+                        <div class="filter-option">
+                            <div class="filter-checkbox">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                                </svg>
+                            </div>
+                            <span class="filter-option-label">GitHub Copilot</span>
+                            <span class="filter-option-count">7</span>
+                        </div>
+                        <div class="filter-option">
+                            <div class="filter-checkbox">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                                </svg>
+                            </div>
+                            <span class="filter-option-label">Claude</span>
+                            <span class="filter-option-count">5</span>
+                        </div>
+                        <div class="filter-option">
+                            <div class="filter-checkbox">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                                </svg>
+                            </div>
+                            <span class="filter-option-label">ChatGPT</span>
+                            <span class="filter-option-count">3</span>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- SEARCH RESULTS -->
+            <div class="search-results">
+                <div class="results-toolbar">
+                    <p class="results-info">Showing <strong>1-10</strong> of <strong>24</strong> results</p>
+                    <div class="sort-dropdown">
+                        <span class="sort-label">Sort by:</span>
+                        <select class="sort-select">
+                            <option value="relevance">Most Relevant</option>
+                            <option value="recent">Most Recent</option>
+                            <option value="popular">Most Popular</option>
+                            <option value="likes">Most Liked</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="results-list">
+                    <!-- Result 1: Prompt -->
+                    <article class="result-card" data-type="prompt">
+                        <div class="result-type-badge">
+                            <div class="result-type-icon prompt">
+                                <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                            </div>
+                            <span class="result-type-label prompt">Prompt</span>
+                        </div>
+                        <div class="result-content">
+                            <div class="result-header">
+                                <h3 class="result-title"><mark>Code Review</mark> Checklist Generator</h3>
+                                <button class="result-bookmark">
+                                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <p class="result-description">Automated <mark>code review</mark> checklist generator that analyzes your pull request and creates a comprehensive review checklist based on best practices and common issues.</p>
+                            <div class="result-meta">
+                                <div class="result-tags">
+                                    <span class="result-tag task">Code Reviews</span>
+                                    <span class="result-tag tool">Claude Code</span>
+                                </div>
+                                <div class="result-author">
+                                    <div class="result-author-avatar">MS</div>
+                                    <span>Michael Sander</span>
+                                </div>
+                                <div class="result-stats">
+                                    <span class="result-stat">
+                                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                        </svg>
+                                        342
+                                    </span>
+                                    <span class="result-stat">
+                                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/>
+                                        </svg>
+                                        28
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Result 2: Skill -->
+                    <article class="result-card" data-type="skill">
+                        <div class="result-type-badge">
+                            <div class="result-type-icon skill">
+                                <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                </svg>
+                            </div>
+                            <span class="result-type-label skill">Skill</span>
+                        </div>
+                        <div class="result-content">
+                            <div class="result-header">
+                                <h3 class="result-title">Automated PR <mark>Review</mark> Agent</h3>
+                                <button class="result-bookmark saved">
+                                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <p class="result-description">Claude Code skill that automatically reviews pull requests, checks for common issues, security vulnerabilities, and provides actionable feedback.</p>
+                            <div class="result-meta">
+                                <div class="result-tags">
+                                    <span class="result-tag task">Code Reviews</span>
+                                    <span class="result-tag tool">Claude Code</span>
+                                </div>
+                                <div class="result-author">
+                                    <div class="result-author-avatar" style="background: linear-gradient(135deg, var(--accent-violet), var(--accent-rose))">JV</div>
+                                    <span>Jurre Vogel</span>
+                                </div>
+                                <div class="result-stats">
+                                    <span class="result-stat">
+                                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                        </svg>
+                                        256
+                                    </span>
+                                    <span class="result-stat">
+                                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/>
+                                        </svg>
+                                        31
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Result 3: Video -->
+                    <article class="result-card" data-type="video">
+                        <div class="result-type-badge">
+                            <div class="result-type-icon video">
+                                <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </div>
+                            <span class="result-type-label video">Video</span>
+                        </div>
+                        <div class="result-content">
+                            <div class="result-header">
+                                <h3 class="result-title">Effective <mark>Code Review</mark> Techniques with AI</h3>
+                                <button class="result-bookmark">
+                                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <p class="result-description">Learn how to leverage AI assistants to perform thorough <mark>code reviews</mark>, catch bugs early, and provide constructive feedback to your team.</p>
+                            <div class="result-meta">
+                                <div class="result-tags">
+                                    <span class="result-tag task">Code Reviews</span>
+                                    <span class="result-tag tool">Claude</span>
+                                </div>
+                                <div class="result-author">
+                                    <div class="result-author-avatar" style="background: linear-gradient(135deg, var(--accent-amber), var(--accent-rose))">LM</div>
+                                    <span>Lucia Martinez</span>
+                                </div>
+                                <div class="result-stats">
+                                    <span class="result-stat">
+                                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                        </svg>
+                                        1.2k
+                                    </span>
+                                    <span class="result-stat">
+                                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/>
+                                        </svg>
+                                        89
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Result 4: Prompt -->
+                    <article class="result-card" data-type="prompt">
+                        <div class="result-type-badge">
+                            <div class="result-type-icon prompt">
+                                <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                            </div>
+                            <span class="result-type-label prompt">Prompt</span>
+                        </div>
+                        <div class="result-content">
+                            <div class="result-header">
+                                <h3 class="result-title">Security-Focused <mark>Code Review</mark> Prompt</h3>
+                                <button class="result-bookmark">
+                                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <p class="result-description">A specialized prompt for security-focused <mark>code reviews</mark> that checks for OWASP Top 10 vulnerabilities, injection attacks, and authentication issues.</p>
+                            <div class="result-meta">
+                                <div class="result-tags">
+                                    <span class="result-tag task">Code Reviews</span>
+                                    <span class="result-tag tool">Claude</span>
+                                </div>
+                                <div class="result-author">
+                                    <div class="result-author-avatar" style="background: linear-gradient(135deg, var(--accent-cyan), var(--accent-emerald))">HK</div>
+                                    <span>Hans Kunz</span>
+                                </div>
+                                <div class="result-stats">
+                                    <span class="result-stat">
+                                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                        </svg>
+                                        198
+                                    </span>
+                                    <span class="result-stat">
+                                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/>
+                                        </svg>
+                                        24
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Result 5: Prompt -->
+                    <article class="result-card" data-type="prompt">
+                        <div class="result-type-badge">
+                            <div class="result-type-icon prompt">
+                                <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                            </div>
+                            <span class="result-type-label prompt">Prompt</span>
+                        </div>
+                        <div class="result-content">
+                            <div class="result-header">
+                                <h3 class="result-title">Performance <mark>Review</mark> Analyzer for .NET <mark>Code</mark></h3>
+                                <button class="result-bookmark">
+                                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <p class="result-description">Analyze .NET <mark>code</mark> for performance issues during <mark>code review</mark>. Identifies N+1 queries, memory leaks, and inefficient LINQ operations.</p>
+                            <div class="result-meta">
+                                <div class="result-tags">
+                                    <span class="result-tag task">Code Reviews</span>
+                                    <span class="result-tag tool">GitHub Copilot</span>
+                                </div>
+                                <div class="result-author">
+                                    <div class="result-author-avatar" style="background: linear-gradient(135deg, var(--accent-emerald), var(--accent-cyan))">RB</div>
+                                    <span>Renier Bakker</span>
+                                </div>
+                                <div class="result-stats">
+                                    <span class="result-stat">
+                                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                        </svg>
+                                        167
+                                    </span>
+                                    <span class="result-stat">
+                                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/>
+                                        </svg>
+                                        19
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
+                <!-- Pagination -->
+                <nav class="pagination">
+                    <button class="pagination-btn" disabled>
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                    </button>
+                    <button class="pagination-btn active">1</button>
+                    <button class="pagination-btn">2</button>
+                    <button class="pagination-btn">3</button>
+                    <button class="pagination-btn">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-main">
+                <div class="footer-brand">
+                    <div class="footer-logo">
+                        <span class="logo-mark">RAISE</span>
+                        <span class="logo-subtitle">Knowledge Platform</span>
+                    </div>
+                    <p class="footer-description">
+                        Empowering Info Support teams to integrate AI into their daily workflow.
+                        Share what works, learn from colleagues, and accelerate your AI journey.
+                    </p>
+                </div>
+
+                <div class="footer-column">
+                    <h4>Platform</h4>
+                    <div class="footer-links">
+                        <a href="#">About</a>
+                        <a href="#">How It Works</a>
+                        <a href="#">AI Policy</a>
+                    </div>
+                </div>
+
+                <div class="footer-column">
+                    <h4>Content</h4>
+                    <div class="footer-links">
+                        <a href="#">Browse Prompts</a>
+                        <a href="#">Browse Skills</a>
+                        <a href="#">Browse Videos</a>
+                    </div>
+                </div>
+
+                <div class="footer-column">
+                    <h4>Community</h4>
+                    <div class="footer-links">
+                        <a href="#">Contributors</a>
+                        <a href="#">Leaderboard</a>
+                        <a href="#">Events</a>
+                    </div>
+                </div>
+
+                <div class="footer-column">
+                    <h4>Help</h4>
+                    <div class="footer-links">
+                        <a href="#">Getting Started</a>
+                        <a href="#">FAQ</a>
+                        <a href="#">Contact</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <span>RAISE Knowledge Platform &mdash; <a href="#">Info Support</a></span>
+                <span>Powered by the <a href="#">AISE team</a></span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Search focus shortcut
+        document.addEventListener('keydown', (e) => {
+            if (e.key === '/' && !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
+                e.preventDefault();
+                document.querySelector('.search-input').focus();
+            }
+        });
+
+        // Filter chip toggle
+        document.querySelectorAll('.filter-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                if (chip.textContent.trim() === 'All') {
+                    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+                    chip.classList.add('active');
+                } else {
+                    document.querySelector('.filter-chip.active[data-all]')?.classList.remove('active');
+                    chip.classList.toggle('active');
+                }
+            });
+        });
+
+        // Filter option toggle
+        document.querySelectorAll('.filter-option').forEach(option => {
+            option.addEventListener('click', () => {
+                option.classList.toggle('selected');
+            });
+        });
+
+        // Clear search
+        document.querySelector('.search-clear').addEventListener('click', () => {
+            document.querySelector('.search-input').value = '';
+            document.querySelector('.search-input').focus();
+        });
+    </script>
+</body>
+</html>
