@@ -1,7 +1,10 @@
 package com.infosupport.promptyard.content
 
 import com.infosupport.promptyard.profiles.UserProfileRepository
+import com.infosupport.promptyard.search.ContentItemEvent
+import com.infosupport.promptyard.search.ContentItemEventType
 import io.quarkus.security.identity.SecurityIdentity
+import io.vertx.mutiny.core.eventbus.EventBus
 import jakarta.inject.Inject
 import jakarta.transaction.Transactional
 import jakarta.ws.rs.Consumes
@@ -31,6 +34,9 @@ class PromptsResource {
 
     @Inject
     lateinit var contentItemRepository: com.infosupport.promptyard.content.ContentItemRepository
+
+    @Inject
+    lateinit var eventBus: EventBus
 
     @GET
     @Path("/{slug}")
@@ -99,6 +105,17 @@ class PromptsResource {
 
         contentItemRepository.persist(prompt)
 
+        eventBus.requestAndForget<Any>("content-item.changed", ContentItemEvent(
+            contentItemId = prompt.id!!,
+            eventType = ContentItemEventType.CREATED,
+            contentType = "prompt",
+            slug = prompt.slug,
+            content = prompt.content,
+            description = prompt.description,
+            tags = prompt.tags,
+            authorFullName = userProfile.fullName,
+        ))
+
         return Response
             .created(URI.create("/api/content/prompts/${prompt.slug}"))
             .entity(_root_ide_package_.com.infosupport.promptyard.content.SubmitPromptResponse(slug = prompt.slug))
@@ -134,6 +151,17 @@ class PromptsResource {
         prompt.tags = request.tags
         prompt.modifiedAt = Instant.now()
 
+        eventBus.requestAndForget<Any>("content-item.changed", ContentItemEvent(
+            contentItemId = prompt.id!!,
+            eventType = ContentItemEventType.UPDATED,
+            contentType = "prompt",
+            slug = prompt.slug,
+            content = prompt.content,
+            description = prompt.description,
+            tags = prompt.tags,
+            authorFullName = userProfile.fullName,
+        ))
+
         return Response.ok(UpdatePromptResponse(slug = prompt.slug)).build()
     }
 
@@ -156,6 +184,12 @@ class PromptsResource {
         if (prompt.authorId != userProfile.id) {
             return Response.status(Response.Status.FORBIDDEN).build()
         }
+
+        eventBus.requestAndForget<Any>("content-item.changed", ContentItemEvent(
+            contentItemId = prompt.id!!,
+            eventType = ContentItemEventType.DELETED,
+            contentType = prompt.contentType,
+        ))
 
         contentItemRepository.delete(prompt)
 

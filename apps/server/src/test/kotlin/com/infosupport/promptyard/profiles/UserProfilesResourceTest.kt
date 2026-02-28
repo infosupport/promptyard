@@ -505,50 +505,44 @@ class UserProfilesResourceTest {
     // -------------------------------------------------------------------------
 
     @Test
-    fun `POST profiles redirects to login when no authentication is provided`() {
+    fun `POST profiles returns 401 when no authentication is provided`() {
         Given {
             contentType(MediaType.APPLICATION_JSON)
             body("""{"privacyAccepted": true}""")
-            redirects().follow(false)
         } When {
             post("/api/profiles")
         } Then {
-            statusCode(302)
+            statusCode(401)
         }
     }
 
     @Test
-    fun `GET profiles me redirects to login when no authentication is provided`() {
-        Given {
-            redirects().follow(false)
-        } When {
+    fun `GET profiles me returns 401 when no authentication is provided`() {
+        When {
             get("/api/profiles/me")
         } Then {
-            statusCode(302)
+            statusCode(401)
         }
     }
 
     @Test
-    fun `PUT profiles me redirects to login when no authentication is provided`() {
+    fun `PUT profiles me returns 401 when no authentication is provided`() {
         Given {
             contentType(MediaType.APPLICATION_JSON)
             body("""{"jobTitle":"Ghost"}""")
-            redirects().follow(false)
         } When {
             put("/api/profiles/me")
         } Then {
-            statusCode(302)
+            statusCode(401)
         }
     }
 
     @Test
-    fun `GET profiles by slug redirects to login when no authentication is provided`() {
-        Given {
-            redirects().follow(false)
-        } When {
+    fun `GET profiles by slug returns 401 when no authentication is provided`() {
+        When {
             get("/api/profiles/some-slug")
         } Then {
-            statusCode(302)
+            statusCode(401)
         }
     }
 }

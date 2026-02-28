@@ -202,13 +202,11 @@ class PromptsResourceTest {
     // -------------------------------------------------------------------------
 
     @Test
-    fun `redirects to login when getting a prompt without authentication`() {
-        Given {
-            redirects().follow(false)
-        } When {
+    fun `returns 401 when getting a prompt without authentication`() {
+        When {
             get("/api/content/prompts/some-slug")
         } Then {
-            statusCode(302)
+            statusCode(401)
         }
     }
 
@@ -302,7 +300,7 @@ class PromptsResourceTest {
     // -------------------------------------------------------------------------
 
     @Test
-    fun `redirects to login when no authentication is provided`() {
+    fun `returns 401 when no authentication is provided`() {
         val body = """{
             "title": "Unauthorized Prompt",
             "description": "Should be rejected",
@@ -313,11 +311,10 @@ class PromptsResourceTest {
         Given {
             contentType(MediaType.APPLICATION_JSON)
             body(body)
-            redirects().follow(false)
         } When {
             post("/api/content/prompts")
         } Then {
-            statusCode(302)
+            statusCode(401)
         }
     }
 
@@ -541,7 +538,7 @@ class PromptsResourceTest {
     // -------------------------------------------------------------------------
 
     @Test
-    fun `redirects to login when updating a prompt without authentication`() {
+    fun `returns 401 when updating a prompt without authentication`() {
         val body = """{
             "title": "Unauthorized Update",
             "description": "Should be rejected",
@@ -552,11 +549,10 @@ class PromptsResourceTest {
         Given {
             contentType(MediaType.APPLICATION_JSON)
             body(body)
-            redirects().follow(false)
         } When {
             put("/api/content/prompts/some-slug")
         } Then {
-            statusCode(302)
+            statusCode(401)
         }
     }
 
@@ -649,13 +645,11 @@ class PromptsResourceTest {
     // -------------------------------------------------------------------------
 
     @Test
-    fun `redirects to login when deleting a prompt without authentication`() {
-        Given {
-            redirects().follow(false)
-        } When {
+    fun `returns 401 when deleting a prompt without authentication`() {
+        When {
             delete("/api/content/prompts/some-slug")
         } Then {
-            statusCode(302)
+            statusCode(401)
         }
     }
 }

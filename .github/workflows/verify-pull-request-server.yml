@@ -19,8 +19,31 @@ jobs:
           java-version: 25
           cache: maven
 
+      - name: Cache Docker images (dev services)
+        uses: actions/cache@v4
+        with:
+          path: /tmp/docker-images
+          key: docker-images-${{ runner.os }}-${{ hashFiles('apps/server/pom.xml') }}
+
+      - name: Load cached Docker images
+        run: |
+          if [ -d /tmp/docker-images ]; then
+            for img in /tmp/docker-images/*.tar; do
+              docker load -i "$img" 2>/dev/null || true
+            done
+          fi
+
       - name: Build and test
         run: ./mvnw -pl apps/server verify -Dquarkus.quinoa=false
+
+      - name: Save Docker images for cache
+        if: always()
+        run: |
+          mkdir -p /tmp/docker-images
+          docker images --format '{{.Repository}}:{{.Tag}}' | grep -vE '<none>|^$' | while read img; do
+            filename=$(echo "$img" | tr '/:' '_')
+            docker save "$img" -o "/tmp/docker-images/${filename}.tar" 2>/dev/null || true
+          done
 
   frontend:
     name: Frontend

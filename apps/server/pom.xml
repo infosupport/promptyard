@@ -100,6 +100,16 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-flyway</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.quarkiverse.opensearch</groupId>
+            <artifactId>quarkus-opensearch-java-client</artifactId>
+            <version>3.2.2</version>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkiverse.opensearch</groupId>
+            <artifactId>quarkus-opensearch-transport-apache</artifactId>
+            <version>3.2.2</version>
+        </dependency>
     </dependencies>
 
     <build>
