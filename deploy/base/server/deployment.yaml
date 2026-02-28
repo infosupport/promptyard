@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: promptyard-server
+  labels:
+    app.kubernetes.io/name: promptyard-server
+    app.kubernetes.io/component: server
+    app.kubernetes.io/part-of: promptyard
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: promptyard-server
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: promptyard-server
+        app.kubernetes.io/component: server
+        app.kubernetes.io/part-of: promptyard
+    spec:
+      containers:
+        - name: server
+          image: ghcr.io/infosupport/promptyard:latest
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          env:
+            - name: QUARKUS_OIDC_AUTH_SERVER_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: promptyard-server-config
+                  key: QUARKUS_OIDC_AUTH_SERVER_URL
+            - name: QUARKUS_OIDC_CLIENT_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: promptyard-server-config
+                  key: QUARKUS_OIDC_CLIENT_ID
+            - name: QUARKUS_DATASOURCE_JDBC_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: promptyard-server-config
+                  key: QUARKUS_DATASOURCE_JDBC_URL
+            - name: QUARKUS_OPENSEARCH_HOSTS
+              valueFrom:
+                configMapKeyRef:
+                  name: promptyard-server-config
+                  key: QUARKUS_OPENSEARCH_HOSTS
+            - name: QUARKUS_OIDC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: promptyard-server-secret
+                  key: QUARKUS_OIDC_CLIENT_SECRET
+            - name: QUARKUS_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: promptyard-server-secret
+                  key: QUARKUS_DATASOURCE_USERNAME
+            - name: QUARKUS_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: promptyard-server-secret
+                  key: QUARKUS_DATASOURCE_PASSWORD
+            - name: QUARKUS_HTTP_AUTH_SESSION_ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: promptyard-server-secret
+                  key: QUARKUS_HTTP_AUTH_SESSION_ENCRYPTION_KEY
+          livenessProbe:
+            httpGet:
+              path: /q/health/live
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /q/health/ready
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 250m
+            limits:
+              memory: 512Mi
+              cpu: 500m
