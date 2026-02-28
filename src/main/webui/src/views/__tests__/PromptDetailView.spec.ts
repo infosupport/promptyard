@@ -18,6 +18,11 @@ vi.mock('@/services/prompts', () => ({
   getPromptBySlug: vi.fn(),
 }))
 
+vi.mock('@/services/comments', () => ({
+  getComments: vi.fn().mockResolvedValue([]),
+  createComment: vi.fn(),
+}))
+
 import { getPromptBySlug } from '@/services/prompts'
 
 const mockPrompt: PromptDetailResponse = {
