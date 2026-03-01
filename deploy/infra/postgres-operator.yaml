@@ -1,17 +1,17 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: postgres
+  name: postgres-operator
   namespace: argocd
 spec:
   project: default
   source:
-    path: deploy/infra/postgres/
+    path: deploy/infra/postgres-operator/
     repoURL: https://github.com/infosupport/promptyard
     targetRevision: gitops-configuration
   destination:
     server: https://kubernetes.default.svc
-    namespace: default
+    namespace: postgres-operator
   syncPolicy:
     automated:
       prune: true
