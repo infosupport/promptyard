@@ -11,6 +11,8 @@ spec:
     repoURL: https://github.com/infosupport/promptyard.git
     targetRevision: gitops-configuration
     path: deploy/infra
+    kustomize:
+      buildOptions: --enable-helm
   destination:
     server: https://kubernetes.default.svc
   syncPolicy:
