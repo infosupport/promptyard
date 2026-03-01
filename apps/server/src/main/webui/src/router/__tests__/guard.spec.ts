@@ -44,6 +44,17 @@ describe('navigation guard', () => {
     expect(getCurrentProfile).not.toHaveBeenCalled()
   })
 
+  it('allows navigation to /privacy without profile check', async () => {
+    vi.mocked(getCurrentProfile).mockResolvedValue(null)
+
+    const router = await importRouter()
+    router.push('/privacy')
+    await router.isReady()
+
+    expect(router.currentRoute.value.name).toBe('privacy')
+    expect(getCurrentProfile).not.toHaveBeenCalled()
+  })
+
   it('redirects to /welcome when no profile exists', async () => {
     vi.mocked(getCurrentProfile).mockResolvedValue(null)
 
