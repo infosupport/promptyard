@@ -11,7 +11,7 @@ spec:
     targetRevision: gitops-configuration
   destination:
     server: https://kubernetes.default.svc
-    namespace: postgres-operator
+    namespace: default
   syncPolicy:
     automated:
       prune: true
