@@ -37,14 +37,9 @@ spec:
               paths:
                 - path: /
                   pathType: Prefix
-        extraEnv: |
-          - name: KEYCLOAK_ADMIN
-            value: admin
-          - name: KEYCLOAK_ADMIN_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: keycloak-admin-secret
-                key: KEYCLOAK_ADMIN_PASSWORD
+        extraEnvFrom: |
+          - secretRef:
+              name: keycloak-admin-secret
   destination:
     server: https://kubernetes.default.svc
     namespace: promptyard-staging
