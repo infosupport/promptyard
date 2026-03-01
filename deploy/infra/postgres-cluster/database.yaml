@@ -26,4 +26,4 @@ spec:
     promptyard_staging: {}
     promptyard_prod: {}
   postgresql:
-    version: "18"
+    version: "17"
