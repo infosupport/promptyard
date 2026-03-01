@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: promptyard-server-config
+data:
+  QUARKUS_OIDC_AUTH_SERVER_URL: "REPLACE_WITH_PROD_OIDC_AUTH_SERVER_URL"
+  QUARKUS_OIDC_CLIENT_ID: "REPLACE_WITH_PROD_OIDC_CLIENT_ID"
+  QUARKUS_DATASOURCE_JDBC_URL: "jdbc:postgresql://promptyard-db:5432/promptyard"
+  QUARKUS_OPENSEARCH_HOSTS: "REPLACE_WITH_PROD_OPENSEARCH_HOST:9200"

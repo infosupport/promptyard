@@ -6,6 +6,9 @@ namespace: promptyard-staging
 resources:
   - ../base
   - namespace.yaml
+  - configmap.yaml
+  - sealed-secret.yaml
+  - ghcr-pull-secret.yaml
 
 patches:
   - path: patches/deployment-patch.yaml
