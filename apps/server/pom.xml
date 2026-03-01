@@ -114,6 +114,10 @@
             <artifactId>quarkus-opensearch-transport-apache</artifactId>
             <version>3.2.2</version>
         </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-container-image-jib</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
