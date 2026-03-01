@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - ../../../base/server
   - sealed-secret.yaml
+  - ghcr-pull-secret.yaml
 namespace: promptyard-dev
 images:
   - name: ghcr.io/infosupport/promptyard
