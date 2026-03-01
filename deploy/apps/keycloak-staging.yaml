@@ -17,6 +17,7 @@ spec:
         command:
           - /opt/keycloak/bin/kc.sh
           - start
+          - --hostname=keycloak.local
         database:
           vendor: postgres
           hostname: promptyard-db
