@@ -28,12 +28,13 @@
 - `getPromptBySlug()` and `updatePrompt()` use `encodeURIComponent()` on the slug — good practice
 - **INCONSISTENCY:** `getProfileBySlug()` and `getProfileContent()` do NOT use `encodeURIComponent()` — flagged in FEAT-008 review
 - `PromptDetailResponse` includes `isOwner: boolean` for ownership checks
+- `searchContent(query, page, signal?)` uses URLSearchParams and AbortSignal; reuses ContentPageResponse
 
 ### Routing
 - Router in `src/main/webui/src/router/index.ts` with HTML5 history mode
 - Global `beforeEach` guard handles profile detection and redirect to `/welcome`
 - `/welcome` route is outside DefaultLayout (no navigation bar for unonboarded users)
-- Routes: home `/`, create-prompt `/content/prompts/new`, prompt-detail `/content/prompts/:slug`, edit-prompt `/content/prompts/:slug/edit`, my-profile `/profiles/me`, profile `/profiles/:slug`
+- Routes: home `/`, search `/search`,, create-prompt `/content/prompts/new`, prompt-detail `/content/prompts/:slug`, edit-prompt `/content/prompts/:slug/edit`, my-profile `/profiles/me`, profile `/profiles/:slug`
 - Static routes (e.g., `profiles/me`) must come before parameterized routes (e.g., `profiles/:slug`) to avoid capture
 
 ### Testing Conventions
@@ -64,6 +65,7 @@
 - `useMyContent` in `src/main/webui/src/composables/useMyContent.ts` -- fetches current user's content via `getMyContent()`
 - `useProfileContent` in `src/main/webui/src/composables/useProfileContent.ts` -- fetches a profile's content by slug via `getProfileContent()`
 - `useUnsavedChanges` in `src/main/webui/src/composables/useUnsavedChanges.ts` -- route leave guard + beforeunload for dirty forms; returns showDialog, confirmLeave, cancelLeave, bypass; used by CreatePromptView and EditPromptView
+- `useSearch` in `src/main/webui/src/composables/useSearch.ts` -- search with AbortController cancellation; does not auto-fetch on mount
 - Both content composables share identical item mapping logic (MyContentItemResponse -> ContentItemSummary)
 - Uses `@vueuse/core` `useResizeObserver` for resize observation
 
@@ -113,3 +115,11 @@ See [patterns.md](./patterns.md) for detailed component and styling patterns.
 - Comments prepended via `unshift()` after submit; form reset via `form.resetForm()`
 - `defineExpose` used in CommentsSection for test access -- should be removed in favor of DOM interaction in tests
 - CommentsSection Storybook story only has Default variant and makes real API calls -- needs MSW or presentational extraction
+
+### Search Feature (FEAT-014)
+- `searchContent(query, page, signal?)` in `src/main/webui/src/services/search.ts` -- uses URLSearchParams, accepts AbortSignal, reuses `ContentPageResponse` type from content service
+- `useSearch` composable in `src/main/webui/src/composables/useSearch.ts` -- AbortController pattern for request cancellation; does NOT auto-fetch on mount (unlike useMyContent/useProfileContent)
+- `SearchView` uses `watch(() => [route.query.q, route.query.page], ..., { immediate: true })` for reactive route query watching -- BETTER pattern than other views that read params once in onMounted
+- Three composables now share nearly identical ContentPageItem -> ContentItemSummary mapping logic (useSearch, useMyContent, useProfileContent) -- extract helper if a fourth appears
+- Route: `/search` with query params `q` and `page` (1-based in URL, 0-based internally)
+- NavigationSearch navigates to `/search?q={query}` on form submit
