@@ -14,6 +14,9 @@ spec:
     helm:
       releaseName: keycloak
       valuesObject:
+        command:
+          - /opt/keycloak/bin/kc.sh
+          - start
         database:
           vendor: postgres
           hostname: promptyard-db
