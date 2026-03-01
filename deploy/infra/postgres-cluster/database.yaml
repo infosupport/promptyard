@@ -1,0 +1,29 @@
+apiVersion: "acid.zalan.do/v1"
+kind: postgresql
+metadata:
+  name: postgres
+spec:
+  teamId: "promptyard"
+  volume:
+    size: 8Gi
+  numberOfInstances: 3
+  users:
+    postgres:
+      - superuser
+      - createdb
+    promptyard_dev:
+      - createdb
+    promptyard_staging:
+      - createdb
+    promptyard_prod:
+      - createdb
+  databases:
+    promptyard_dev: promptyard_dev
+    promptyard_staging: promptyard_staging
+    promptyard_prod: promptyard_prod
+  preparedDatabases:
+    promptyard_dev: {}
+    promptyard_staging: {}
+    promptyard_prod: {}
+  postgresql:
+    version: "18"
