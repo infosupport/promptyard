@@ -31,7 +31,7 @@ spec:
           relativePath: /
         proxy:
           enabled: true
-          mode: edge
+          mode: xforwarded
         ingress:
           enabled: true
           ingressClassName: nginx
