@@ -54,13 +54,18 @@ const router = createRouter({
           name: 'profile',
           component: () => import('@/views/ProfileView.vue'),
         },
+        {
+          path: 'privacy',
+          name: 'privacy',
+          component: () => import('@/views/PrivacyView.vue'),
+        },
       ],
     },
   ],
 })
 
 router.beforeEach(async (to) => {
-  if (to.name === 'welcome') return true
+  if (to.name === 'welcome' || to.name === 'privacy') return true
 
   const profileStore = useProfileStore()
   await profileStore.fetchProfile()
