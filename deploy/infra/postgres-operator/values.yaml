@@ -1,0 +1,2 @@
+configGeneral:
+  watched_namespace: "*" # Operator watches all namespaces

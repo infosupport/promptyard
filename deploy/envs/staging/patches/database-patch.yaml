@@ -1,0 +1,8 @@
+apiVersion: acid.zalan.do/v1
+kind: postgresql
+metadata:
+  name: promptyard-db
+spec:
+  numberOfInstances: 1
+  volume:
+    size: 5Gi
