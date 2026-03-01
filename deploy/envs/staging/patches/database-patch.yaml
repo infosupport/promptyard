@@ -6,3 +6,7 @@ spec:
   numberOfInstances: 1
   volume:
     size: 5Gi
+  users:
+    keycloak: []
+  databases:
+    keycloak: keycloak

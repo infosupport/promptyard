@@ -1,0 +1,56 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: keycloak-staging
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://codecentric.github.io/helm-charts
+    chart: keycloakx
+    targetRevision: 7.*
+    helm:
+      releaseName: keycloak
+      valuesObject:
+        database:
+          vendor: postgres
+          hostname: promptyard-db
+          port: 5432
+          database: keycloak
+          username: keycloak
+          existingSecret: keycloak.promptyard-db.credentials.postgresql.acid.zalan.do
+          existingSecretKey: password
+        dbchecker:
+          enabled: true
+        http:
+          relativePath: /
+        proxy:
+          enabled: true
+          mode: edge
+        ingress:
+          enabled: true
+          ingressClassName: nginx
+          rules:
+            - host: keycloak.local
+              paths:
+                - path: /
+                  pathType: Prefix
+        extraEnv:
+          - name: KEYCLOAK_ADMIN
+            value: admin
+          - name: KEYCLOAK_ADMIN_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: keycloak-admin-secret
+                key: KEYCLOAK_ADMIN_PASSWORD
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: promptyard-staging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

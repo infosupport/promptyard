@@ -9,6 +9,7 @@ resources:
   - configmap.yaml
   - sealed-secret.yaml
   - ghcr-pull-secret.yaml
+  - keycloak-admin-secret.yaml
 
 patches:
   - path: patches/deployment-patch.yaml
