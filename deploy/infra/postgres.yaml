@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    path: deploy/infra/postgres
+    path: deploy/infra/postgres/
     repoURL: https://github.com/infosupport/promptyard
     targetRevision: gitops-configuration
   destination:
