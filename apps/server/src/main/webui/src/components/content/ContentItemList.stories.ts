@@ -41,11 +41,11 @@ function generateItems(
   const authors = ['Jane Doe', 'John Smith', 'Alice Johnson', 'Bob Williams', 'Carol Davis']
 
   return Array.from({ length: count }, (_, i) => ({
-    title: titles[contentType][i % titles[contentType].length],
+    title: titles[contentType][i % titles[contentType].length]!,
     description: `A ${contentType} that helps teams work more effectively by automating common tasks and providing structured guidance.`,
     tags: ['productivity', contentType, `tag-${i + 1}`],
     contentType,
-    authorName: authors[i % authors.length],
+    authorName: authors[i % authors.length]!,
     url: `/content/${contentType}-item-${i + 1}`,
   }))
 }

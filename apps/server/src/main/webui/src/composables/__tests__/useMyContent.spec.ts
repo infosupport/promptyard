@@ -179,7 +179,7 @@ describe('useMyContent', () => {
     expect(result.pageIndex.value).toBe(1)
     expect(result.totalPages.value).toBe(2)
     expect(result.items.value).toHaveLength(1)
-    expect(result.items.value[0].title).toBe('Old Prompt')
+    expect(result.items.value[0]!.title).toBe('Old Prompt')
   })
 
   it('constructs correct URLs for different content types', async () => {
@@ -235,10 +235,10 @@ describe('useMyContent', () => {
     const { result } = mountComposable()
     await flushPromises()
 
-    expect(result.items.value[0].url).toBe('/content/prompts/my-prompt')
-    expect(result.items.value[1].url).toBe('/content/skills/my-skill')
-    expect(result.items.value[2].url).toBe('/content/agents/my-agent')
-    expect(result.items.value[3].url).toBe('/content/workflows/my-workflow')
+    expect(result.items.value[0]!.url).toBe('/content/prompts/my-prompt')
+    expect(result.items.value[1]!.url).toBe('/content/skills/my-skill')
+    expect(result.items.value[2]!.url).toBe('/content/agents/my-agent')
+    expect(result.items.value[3]!.url).toBe('/content/workflows/my-workflow')
   })
 
   it('clears error when a subsequent fetch succeeds', async () => {

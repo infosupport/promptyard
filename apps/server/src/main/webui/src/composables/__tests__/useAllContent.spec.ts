@@ -225,10 +225,10 @@ describe('useAllContent', () => {
     result.fetchPage(0)
     await flushPromises()
 
-    expect(result.items.value[0].url).toBe('/content/prompts/my-prompt')
-    expect(result.items.value[1].url).toBe('/content/skills/my-skill')
-    expect(result.items.value[2].url).toBe('/content/agents/my-agent')
-    expect(result.items.value[3].url).toBe('/content/workflows/my-workflow')
+    expect(result.items.value[0]!.url).toBe('/content/prompts/my-prompt')
+    expect(result.items.value[1]!.url).toBe('/content/skills/my-skill')
+    expect(result.items.value[2]!.url).toBe('/content/agents/my-agent')
+    expect(result.items.value[3]!.url).toBe('/content/workflows/my-workflow')
   })
 
   it('defaults pageIndex to 0 and totalPages to 0 before any fetch', () => {

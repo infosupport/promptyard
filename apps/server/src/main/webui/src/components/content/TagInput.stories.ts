@@ -12,6 +12,7 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 export const Empty: Story = {
+  args: { modelValue: [] },
   render: () => ({
     components: { TagInput },
     setup() {
@@ -23,6 +24,7 @@ export const Empty: Story = {
 }
 
 export const WithTags: Story = {
+  args: { modelValue: ['kotlin', 'code-review', 'testing', 'best-practices'] },
   render: () => ({
     components: { TagInput },
     setup() {
@@ -34,6 +36,7 @@ export const WithTags: Story = {
 }
 
 export const ManyTags: Story = {
+  args: { modelValue: ['javascript', 'typescript', 'vue'] },
   render: () => ({
     components: { TagInput },
     setup() {
@@ -58,6 +61,7 @@ export const ManyTags: Story = {
 }
 
 export const Disabled: Story = {
+  args: { modelValue: ['kotlin', 'code-review', 'testing'] },
   render: () => ({
     components: { TagInput },
     setup() {

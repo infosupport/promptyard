@@ -116,8 +116,8 @@ describe('PromptDetailView', () => {
 
     const badges = wrapper.findAll('[data-slot="badge"]')
     expect(badges.length).toBe(2)
-    expect(badges[0].text()).toBe('review')
-    expect(badges[1].text()).toBe('kotlin')
+    expect(badges[0]!.text()).toBe('review')
+    expect(badges[1]!.text()).toBe('kotlin')
   })
 
   it('passes correct props to MonacoEditor', async () => {

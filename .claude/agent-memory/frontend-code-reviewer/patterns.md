@@ -15,9 +15,11 @@
 - NavigationUserMenu.vue: molecule, avatar + dropdown, has `initials` computed prop
 
 ## Layout Pattern
-- DefaultLayout.vue wraps NavigationBar + `<main>` + RouterView
-- Max width: `max-w-7xl` with responsive padding (`px-4 sm:px-6 lg:px-8`)
+- DefaultLayout.vue wraps NavigationBar + `<main>` + RouterView + AppFooter
+- Uses `flex min-h-screen flex-col` with `flex-1` on main to push footer to bottom
+- Container uses responsive padding (`px-4 sm:px-6 lg:px-8`)
 - Used via router config (layout as parent route component)
+- AppFooter in `src/components/layout/` — static footer with privacy link
 
 ## Tailwind Theme
 - Uses oklch color system with CSS custom properties

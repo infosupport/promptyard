@@ -88,8 +88,8 @@ describe('EditProfileView', () => {
 
     const inputs = wrapper.findAll('input[type="text"]')
     expect(inputs.length).toBe(2)
-    expect((inputs[0].element as HTMLInputElement).value).toBe('Developer')
-    expect((inputs[1].element as HTMLInputElement).value).toBe('Engineering')
+    expect((inputs[0]!.element as HTMLInputElement).value).toBe('Developer')
+    expect((inputs[1]!.element as HTMLInputElement).value).toBe('Engineering')
   })
 
   it('shows read-only name and email', () => {

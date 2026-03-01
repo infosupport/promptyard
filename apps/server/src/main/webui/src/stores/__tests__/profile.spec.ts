@@ -16,6 +16,7 @@ const mockProfile: UserProfile = {
   emailAddress: 'john@example.com',
   businessUnit: 'Engineering',
   jobTitle: 'Developer',
+  privacyAcceptedAt: '2026-01-01T00:00:00Z',
   createdAt: '2026-01-01T00:00:00Z',
   modifiedAt: null,
 }

@@ -4,12 +4,13 @@
 
 ### Component Organization
 - Navigation components live in `src/main/webui/src/components/navigation/` with barrel export in `index.ts`
+- Layout components live in `src/main/webui/src/components/layout/` with barrel export (AppFooter)
 - Content domain components in `src/main/webui/src/components/content/` with barrel export
 - Profile domain components in `src/main/webui/src/components/profiles/` with barrel export (AuthorCard, ProfileDetailsCard)
 - shadcn/vue UI components in `src/main/webui/src/components/ui/` (atoms: button, input, avatar, dropdown-menu, separator, form, checkbox, card, label, badge, pagination, skeleton, alert-dialog, textarea)
-- Layouts in `src/main/webui/src/layouts/` (DefaultLayout wraps routes with NavigationBar)
+- Layouts in `src/main/webui/src/layouts/` (DefaultLayout wraps routes with NavigationBar + AppFooter)
 - Views in `src/main/webui/src/views/`
-- Domain slice convention: components organized by domain (content, profiles, navigation), not by atomic level
+- Domain slice convention: components organized by domain (content, profiles, navigation, layout), not by atomic level
 - Private sub-components (e.g., ContentItemListSkeleton) are NOT exported from barrel files
 
 ### State Management
@@ -34,7 +35,8 @@
 - Router in `src/main/webui/src/router/index.ts` with HTML5 history mode
 - Global `beforeEach` guard handles profile detection and redirect to `/welcome`
 - `/welcome` route is outside DefaultLayout (no navigation bar for unonboarded users)
-- Routes: home `/`, search `/search`,, create-prompt `/content/prompts/new`, prompt-detail `/content/prompts/:slug`, edit-prompt `/content/prompts/:slug/edit`, my-profile `/profiles/me`, profile `/profiles/:slug`
+- Routes: home `/`, search `/search`, privacy `/privacy`, create-prompt `/content/prompts/new`, prompt-detail `/content/prompts/:slug`, edit-prompt `/content/prompts/:slug/edit`, my-profile `/profiles/me`, edit-profile `/profiles/me/edit`, profile `/profiles/:slug`
+- Guard exemption: `welcome` and `privacy` routes skip profile check
 - Static routes (e.g., `profiles/me`) must come before parameterized routes (e.g., `profiles/:slug`) to avoid capture
 
 ### Testing Conventions
@@ -115,6 +117,13 @@ See [patterns.md](./patterns.md) for detailed component and styling patterns.
 - Comments prepended via `unshift()` after submit; form reset via `form.resetForm()`
 - `defineExpose` used in CommentsSection for test access -- should be removed in favor of DOM interaction in tests
 - CommentsSection Storybook story only has Default variant and makes real API calls -- needs MSW or presentational extraction
+
+### Privacy Statement Feature (FEAT-015)
+- `PrivacyView` renders `docs/legal/privacy-statement.md` via `marked` + `v-html` with `@tailwindcss/typography` prose styling
+- Vite alias `@docs` maps to repo root `docs/` dir (5 levels up: `../../../../../docs`), mirrored in `tsconfig.app.json`
+- `marked` v17 used — no built-in sanitization, acceptable for trusted repo content only
+- `AppFooter` in `src/components/layout/` — static footer with RouterLink to `/privacy`
+- If user-supplied markdown is ever rendered, DOMPurify MUST be added
 
 ### Search Feature (FEAT-014)
 - `searchContent(query, page, signal?)` in `src/main/webui/src/services/search.ts` -- uses URLSearchParams, accepts AbortSignal, reuses `ContentPageResponse` type from content service

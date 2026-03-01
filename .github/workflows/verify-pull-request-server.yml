@@ -74,5 +74,8 @@ jobs:
           pnpm exec oxlint .
           pnpm exec eslint .
 
+      - name: Build
+        run: pnpm build
+
       - name: Test
         run: pnpm test:unit --run

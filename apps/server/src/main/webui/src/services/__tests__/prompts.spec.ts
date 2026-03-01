@@ -78,6 +78,7 @@ const mockPromptDetail: PromptDetailResponse = {
     agentCount: 0,
     workflowCount: 1,
   },
+  isOwner: false,
 }
 
 describe('getPromptBySlug', () => {

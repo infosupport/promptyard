@@ -34,8 +34,8 @@ const formSchema = toTypedSchema(
   z.object({
     jobTitle: z.string().optional(),
     businessUnit: z.string().optional(),
-    privacyAccepted: z.literal(true, {
-      errorMap: () => ({ message: 'You must accept the privacy statement to continue.' }),
+    privacyAccepted: z.boolean().refine((val) => val === true, {
+      message: 'You must accept the privacy statement to continue.',
     }),
   }),
 )
@@ -45,7 +45,7 @@ const form = useForm({
   initialValues: {
     jobTitle: '',
     businessUnit: '',
-    privacyAccepted: false as boolean,
+    privacyAccepted: false,
   },
 })
 
