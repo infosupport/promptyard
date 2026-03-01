@@ -12,4 +12,6 @@ spec:
       namespace: promptyard-staging
     - server: https://kubernetes.default.svc
       namespace: promptyard-prod
+    - server: https://kubernetes.default.svc
+      namespace: promptyard-dev
   clusterResourceWhitelist: []
