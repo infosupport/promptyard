@@ -32,36 +32,6 @@ jobs:
           cache: pnpm
           cache-dependency-path: apps/server/src/main/webui/pnpm-lock.yaml
 
-      - name: Install frontend dependencies
-        run: pnpm install --frozen-lockfile
-        working-directory: apps/server/src/main/webui
-
-      - name: Cache Docker images (dev services)
-        uses: actions/cache@v4
-        with:
-          path: /tmp/docker-images
-          key: docker-images-${{ runner.os }}-${{ hashFiles('apps/server/pom.xml') }}
-
-      - name: Load cached Docker images
-        run: |
-          if [ -d /tmp/docker-images ]; then
-            for img in /tmp/docker-images/*.tar; do
-              docker load -i "$img" 2>/dev/null || true
-            done
-          fi
-
-      - name: Verify
-        run: ./mvnw -pl apps/server verify
-
-      - name: Save Docker images for cache
-        if: always()
-        run: |
-          mkdir -p /tmp/docker-images
-          docker images --format '{{.Repository}}:{{.Tag}}' | grep -vE '<none>|^$' | while read img; do
-            filename=$(echo "$img" | tr '/:' '_')
-            docker save "$img" -o "/tmp/docker-images/${filename}.tar" 2>/dev/null || true
-          done
-
       - name: Login to GHCR
         uses: docker/login-action@v3
         with:
@@ -69,9 +39,9 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push image
+      - name: Build and push server image
         run: |
-          ./mvnw -pl apps/server package -DskipTests \
+          ./mvnw -pl apps/server package \
             -Dquarkus.container-image.build=true \
             -Dquarkus.container-image.push=true \
             -Dquarkus.container-image.registry=ghcr.io \
