@@ -4,9 +4,9 @@ metadata:
   name: promptyard-server-prod
   namespace: argocd                          
 spec:
-  project: default                          
+  project: promptyard
   source:
-    repoURL: git@github.com:infosupport/promptyard.git
+    repoURL: https://github.com/infosupport/promptyard
     targetRevision: main                   
     path: deploy/envs/prod/server
   destination:
