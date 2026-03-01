@@ -13,33 +13,8 @@ configMapGenerator:
     literals:
       - QUARKUS_OIDC_AUTH_SERVER_URL=<your-oidc-auth-server-url>
       - QUARKUS_OIDC_CLIENT_ID=<your-oidc-client-id>
-      - QUARKUS_DATASOURCE_JDBC_URL=<your-jdbc-url>
+      - QUARKUS_DATASOURCE_JDBC_URL=jdbc:postgresql://promptyard-db:5432/promptyard
       - QUARKUS_OPENSEARCH_HOSTS=<your-opensearch-hosts>
 generatorOptions:
   disableNameSuffixHash: true
-patches:
-  - target:
-      kind: Deployment
-      name: promptyard-server
-    patch: |-
-      apiVersion: apps/v1
-      kind: Deployment
-      metadata:
-        name: promptyard-server
-      spec:
-        template:
-          spec:
-            containers:
-              - name: server
-                env:
-                  - name: QUARKUS_DATASOURCE_USERNAME
-                    valueFrom:
-                      secretKeyRef:
-                        name: promptyard-dev.postgres.credentials.postgresql.acid.zalan.do
-                        key: username
-                  - name: QUARKUS_DATASOURCE_PASSWORD
-                    valueFrom:
-                      secretKeyRef:
-                        name: promptyard-dev.postgres.credentials.postgresql.acid.zalan.do
-                        key: password
 

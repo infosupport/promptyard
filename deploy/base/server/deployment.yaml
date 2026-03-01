@@ -56,13 +56,13 @@ spec:
             - name: QUARKUS_DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: promptyard-server-secret
-                  key: QUARKUS_DATASOURCE_USERNAME
+                  name: promptyard-server.promptyard-db.credentials.postgresql.acid.zalan.do
+                  key: username
             - name: QUARKUS_DATASOURCE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: promptyard-server-secret
-                  key: QUARKUS_DATASOURCE_PASSWORD
+                  name: promptyard-server.promptyard-db.credentials.postgresql.acid.zalan.do
+                  key: password
             - name: QUARKUS_HTTP_AUTH_SESSION_ENCRYPTION_KEY
               valueFrom:
                 secretKeyRef:
