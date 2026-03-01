@@ -2,16 +2,16 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: promptyard-server-dev
-  namespace: argocd                          
+  namespace: argocd
 spec:
   project: promptyard
   source:
     repoURL: https://github.com/infosupport/promptyard
-    targetRevision: gitops-configuration                   
+    targetRevision: gitops-configuration
     path: deploy/envs/dev/server
   destination:
-    server: https://kubernetes.default.svc  
-    namespace: promptyard-dev             
+    server: https://kubernetes.default.svc
+    namespace: promptyard-dev
   syncPolicy:
     automated:
       prune: true
