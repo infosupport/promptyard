@@ -37,7 +37,7 @@ spec:
               paths:
                 - path: /
                   pathType: Prefix
-        extraEnv:
+        extraEnv: |
           - name: KEYCLOAK_ADMIN
             value: admin
           - name: KEYCLOAK_ADMIN_PASSWORD
