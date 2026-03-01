@@ -12,6 +12,9 @@ Promptyard runs on a single Kubernetes cluster with two namespaces for staged de
 
 Local development uses Quarkus dev mode with Dev Services — no Kubernetes required.
 
+Both the root App-of-Apps and the staging application track the `main` branch. The production
+application also tracks `main` but uses `prune: false` to prevent accidental resource deletion.
+
 ## Deployment Pipeline
 
 ```mermaid
@@ -19,11 +22,11 @@ flowchart LR
     Dev[Developer pushes to main] --> CI[CI Pipeline\nGitHub Actions]
     CI -->|build + push image| GHCR[Container Registry\nghcr.io]
     CI -->|update image tag in\nstaging overlay| Repo[deploy/\nK8s manifests]
-    Repo -->|watches| ArgoCD[ArgoCD\nin-cluster]
-    GHCR -->|pulls image| ArgoCD
-    ArgoCD -->|syncs to| Staging[promptyard-staging]
-    ArgoCD -->|syncs to| Prod[promptyard-prod]
-    ArgoCD -->|syncs to| Infra[kube-system\nSealed Secrets]
+    Repo -->|watches| RootApp[ArgoCD Root App\nApp of Apps]
+    GHCR -->|pulls image| K8s[Kubernetes Cluster]
+    RootApp -->|manages| Infra[infra namespace\nSealed Secrets +\nPostgres Operator]
+    RootApp -->|manages| Staging[promptyard-staging]
+    RootApp -->|manages| Prod[promptyard-prod]
 ```
 
 ### Component Responsibilities
@@ -35,6 +38,7 @@ flowchart LR
 | GitOps Controller | ArgoCD | Sync desired state from Git to cluster |
 | Manifest Management | Kustomize | Manage per-environment Kubernetes manifests |
 | Secret Management | Bitnami Sealed Secrets | Encrypt secrets for safe Git storage |
+| Database Management | Zalando Postgres Operator | Manage PostgreSQL instances via CRDs |
 
 ## Manifest Structure
 
@@ -42,24 +46,48 @@ All Kubernetes and ArgoCD configuration lives in the `deploy/` directory:
 
 ```
 deploy/
-├── infra/
-│   └── sealed-secrets.yaml              # ArgoCD Application — Sealed Secrets controller
-├── apps/
-│   ├── promptyard-server-staging.yaml   # ArgoCD Application — staging
-│   └── promptyard-server-prod.yaml      # ArgoCD Application — production
-├── base/server/
-│   ├── kustomization.yaml               # Base Kustomize manifest
-│   ├── deployment.yaml                  # Deployment (1 replica, health probes, resource limits)
-│   ├── service.yaml                     # ClusterIP Service (port 80 → 8080)
-│   └── ingress.yaml                     # Ingress (nginx, host: promptyard.local)
-├── envs/
-│   ├── staging/server/
-│   │   ├── kustomization.yaml           # Overlay — image tag, ConfigMap, namespace
-│   │   └── sealed-secret.yaml           # SealedSecret (encrypted credentials)
-│   └── prod/server/
-│       ├── kustomization.yaml           # Overlay — image tag, ConfigMap, namespace
-│       └── sealed-secret.yaml           # SealedSecret (encrypted credentials)
-└── kind-config.yaml                     # Local kind cluster config (dev/testing only)
+├── root-app.yaml                        # Root ArgoCD Application (App of Apps)
+├── kind-config.yaml                     # Local KinD cluster config
+├── apps/                                # Child ArgoCD Applications
+│   ├── postgres-operator.yaml
+│   ├── sealed-secrets.yaml
+│   ├── staging.yaml
+│   └── prod.yaml
+├── base/server/                         # Base Kustomize manifests
+│   ├── kustomization.yaml
+│   ├── deployment.yaml
+│   ├── service.yaml
+│   ├── ingress.yaml
+│   └── database.yaml
+└── envs/
+    ├── base/                            # Shared base referenced by overlays
+    │   ├── kustomization.yaml
+    │   └── server/
+    │       ├── kustomization.yaml
+    │       ├── database.yaml
+    │       ├── deployment.yaml
+    │       ├── service.yaml
+    │       └── ingress.yaml
+    ├── staging/
+    │   ├── kustomization.yaml
+    │   ├── namespace.yaml
+    │   ├── configmap.yaml
+    │   ├── sealed-secret.yaml
+    │   ├── ghcr-pull-secret.yaml
+    │   └── patches/
+    │       ├── deployment-patch.yaml
+    │       ├── ingress-patch.yaml
+    │       └── database-patch.yaml
+    └── prod/
+        ├── kustomization.yaml
+        ├── namespace.yaml
+        ├── configmap.yaml
+        ├── sealed-secret.yaml
+        ├── ghcr-pull-secret.yaml
+        └── patches/
+            ├── deployment-patch.yaml
+            ├── ingress-patch.yaml
+            └── database-patch.yaml
 ```
 
 ### Base Manifests
@@ -69,36 +97,63 @@ environments:
 
 - **Deployment** — single replica of `ghcr.io/infosupport/promptyard`, with configuration injected
   via a `ConfigMap` (`promptyard-server-config`) and a `Secret` (`promptyard-server-secret`).
-  Includes readiness and liveness probes on the Quarkus health endpoints (`/q/health/ready`,
-  `/q/health/live`) and resource limits (256–512 Mi memory, 250–500m CPU).
+  Database credentials are sourced from a Postgres Operator-managed secret
+  (`promptyard-server.promptyard-db.credentials.postgresql.acid.zalan.do`). Uses an image pull
+  secret (`ghcr-pull-secret`) for pulling from ghcr.io. Includes readiness and liveness probes on
+  the Quarkus health endpoints (`/q/health/ready`, `/q/health/live`) and resource limits
+  (256–512 Mi memory, 250–500m CPU).
 - **Service** — ClusterIP service exposing port 80, forwarding to the container's `http` port
   (8080).
 - **Ingress** — nginx ingress routing traffic for `promptyard.local` to the service.
+- **Database** — Zalando PostgreSQL CRD (`acid.zalan.do/v1`) defining a `promptyard-db` cluster:
+  PostgreSQL 17, team `promptyard`, user `promptyard_server` with a 1 Gi volume and single instance
+  (overridden per environment via patches).
 
 ### Environment Overlays
 
-Each environment overlay in `deploy/envs/<env>/server/` extends the base with:
+Each environment overlay in `deploy/envs/<env>/` extends the shared base at `deploy/envs/base/`
+with environment-specific resources and patches:
 
-- **Namespace** — sets all resources to `promptyard-staging` or `promptyard-prod`.
+- **Namespace** — creates and targets `promptyard-staging` or `promptyard-prod`.
+- **ConfigMap** (`promptyard-server-config`) — environment-specific non-secret configuration (OIDC
+  auth server URL, client ID, JDBC URL, OpenSearch hosts).
+- **SealedSecret** (`promptyard-server-secret`) — encrypted secret values for OIDC client secret
+  and session encryption key. The Sealed Secrets controller decrypts these into regular `Secret`
+  resources at runtime.
+- **SealedSecret** (`ghcr-pull-secret`) — encrypted Docker registry credentials for pulling images
+  from ghcr.io.
 - **Image tag** — overrides the container image tag (updated by CI for staging, manually via PR for
   production).
-- **ConfigMap** (`configMapGenerator`) — environment-specific non-secret configuration (OIDC auth
-  server URL, client ID, JDBC URL, OpenSearch hosts).
-- **SealedSecret** — encrypted secret values for OIDC client secret, database credentials, and
-  session encryption key. The Sealed Secrets controller decrypts these into regular `Secret`
-  resources at runtime.
+- **Patches** — strategic merge patches that modify deployment (replicas, resources), ingress
+  (hostname), and database (instances, volume size) per environment.
+
+Key differences between environments:
+
+| Setting | Staging | Production |
+|---------|---------|------------|
+| Replicas | 1 | 3 |
+| CPU requests | 100m | 250m |
+| CPU limits | 500m | 1 |
+| Memory requests | 128 Mi | 256 Mi |
+| Memory limits | 512 Mi | 1 Gi |
+| DB instances | 1 | 3 |
+| DB volume size | 5 Gi | 15 Gi |
+| ArgoCD prune | enabled | disabled (safety) |
 
 ### ArgoCD Applications
 
-Three ArgoCD Application resources manage the cluster:
+Five ArgoCD Application resources manage the cluster via an App-of-Apps pattern:
 
-| Application | Source Path | Target Namespace | Purpose |
-|-------------|------------|------------------|---------|
-| `sealed-secrets` | Helm chart (`bitnami-labs/sealed-secrets` v2.17.1) | `kube-system` | Sealed Secrets controller |
-| `promptyard-server-staging` | `deploy/envs/staging/server` | `promptyard-staging` | Staging deployment |
-| `promptyard-server-prod` | `deploy/envs/prod/server` | `promptyard-prod` | Production deployment |
+| Application | Type | Source | Target Namespace | Purpose |
+|---|---|---|---|---|
+| `promptyard` (root) | Kustomize directory | `deploy/apps` | — | App of Apps, manages all child apps |
+| `postgres-operator` | Helm chart (`1.*`) | Zalando chart repo | `infra` | PostgreSQL Operator |
+| `sealed-secrets` | Helm chart (`2.*`) | Bitnami chart repo | `infra` | Sealed Secrets controller |
+| `promptyard-staging` | Kustomize directory | `deploy/envs/staging` | `promptyard-staging` | Staging deployment |
+| `promptyard-prod` | Kustomize directory | `deploy/envs/prod` | `promptyard-prod` | Production deployment |
 
-All three use automated sync with pruning and self-healing. Namespaces are created automatically
+All applications use automated sync with self-healing. The production application has `prune: false`
+to prevent accidental resource deletion. Namespaces are created automatically
 (`CreateNamespace=true`).
 
 ## Deployment Flow
@@ -109,12 +164,13 @@ All three use automated sync with pruning and self-healing. Namespaces are creat
 flowchart TD
     A[Push to main] --> B[CI builds container image]
     B --> C[Push image to ghcr.io with SHA tag]
-    C --> D[CI updates image tag in\ndeploy/envs/staging/server/kustomization.yaml]
+    C --> D[CI updates image tag in\ndeploy/envs/staging/kustomization.yaml]
     D --> E[CI commits and pushes to main]
     E --> F[ArgoCD detects change]
     F --> G[ArgoCD syncs staging namespace]
     G --> H[Sealed Secrets controller\ndecrypts SealedSecret → Secret]
-    H --> I[Deployment rolls out with new image]
+    H --> I[Postgres Operator provisions\ndatabase + credentials]
+    I --> J[Deployment rolls out with new image]
 ```
 
 ### Production Promotion
@@ -130,7 +186,7 @@ flowchart TD
 Production deployments are gated by pull request review. To promote a staging-verified image:
 
 ```bash
-cd deploy/envs/prod/server
+cd deploy/envs/prod
 kustomize edit set image ghcr.io/infosupport/promptyard:<staging-sha>
 # Create PR, review, merge — ArgoCD auto-syncs
 ```
@@ -159,24 +215,19 @@ When setting up the cluster from scratch:
      -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
    ```
 
-2. **Deploy Sealed Secrets** — apply the infrastructure app and wait for the controller:
+2. **Apply the root app** — this bootstraps everything else (Sealed Secrets, Postgres Operator, and
+   all environment deployments):
    ```bash
-   kubectl apply -f deploy/infra/sealed-secrets.yaml
-   kubectl rollout status deployment/sealed-secrets-controller -n kube-system
+   kubectl apply -f deploy/root-app.yaml
    ```
 
-3. **Back up the encryption key** — do this immediately; losing the key makes existing sealed
-   secrets undecryptable:
+3. **Back up the Sealed Secrets encryption key** — do this once the controller is running; losing
+   the key makes existing sealed secrets undecryptable:
    ```bash
-   kubectl get secret -n kube-system \
+   kubectl get secret -n infra \
      -l sealedsecrets.bitnami.com/sealed-secrets-key \
      -o yaml > sealed-secrets-key-backup.yaml
    ```
 
 4. **Seal secrets** — encrypt real values per environment with `kubeseal` (see
    [Secret Management](08-crosscutting-concepts.md#secret-management) in Crosscutting Concepts).
-
-5. **Deploy applications** — apply the ArgoCD Application manifests:
-   ```bash
-   kubectl apply -f deploy/apps/
-   ```
