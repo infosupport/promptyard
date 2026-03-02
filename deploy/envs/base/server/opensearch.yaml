@@ -1,0 +1,30 @@
+apiVersion: opensearch.org/v1
+kind: OpenSearchCluster
+metadata:
+  name: promptyard-opensearch
+spec:
+  general:
+    serviceName: promptyard-opensearch
+    version: "2"
+    httpPort: 9200
+    vendor: opensearch
+  security:
+    tls:
+      transport:
+        generate: true
+      http:
+        generate: false
+  nodePools:
+    - component: nodes
+      replicas: 3
+      diskSize: "5Gi"
+      roles:
+        - "cluster_manager"
+        - "data"
+      resources:
+        requests:
+          memory: "1Gi"
+          cpu: "500m"
+        limits:
+          memory: "1Gi"
+          cpu: "500m"

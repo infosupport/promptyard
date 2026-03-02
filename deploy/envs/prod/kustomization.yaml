@@ -13,6 +13,7 @@ patches:
   - path: patches/deployment-patch.yaml
   - path: patches/ingress-patch.yaml
   - path: patches/database-patch.yaml
+  - path: patches/opensearch-patch.yaml
 
 images:
   - name: acrpromptyard.azurecr.io/infosupport/promptyard
