@@ -16,5 +16,5 @@ patches:
   - path: patches/database-patch.yaml
 
 images:
-  - name: promptyardacr.azurecr.io/infosupport/promptyard
-    newTag: 0024ef5e517a233113c2027978be5852abe6780f
+  - name: acrpromptyard.azurecr.io/infosupport/promptyard
+    newTag: 810922c7c8f494a8541460d88805a200b65a9145

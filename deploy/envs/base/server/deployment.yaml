@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: server
-          image: promptyardacr.azurecr.io/infosupport/promptyard:latest
+          image: acrpromptyard.azurecr.io/infosupport/promptyard:latest
           ports:
             - name: http
               containerPort: 8080
