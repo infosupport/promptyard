@@ -7,11 +7,11 @@ The cluster and supporting Azure resources are provisioned via Bicep templates a
 with the Azure CLI. This is a temporary setup — the plan is to migrate to an internal Kubernetes
 cluster in the near future.
 
-| Environment | Namespace | Deploy Trigger | Sync Mode |
-|-------------|-----------|----------------|-----------|
-| Local | — | `./mvnw -pl apps/server quarkus:dev` | N/A |
-| Staging | `promptyard-staging` | Push to `main` (automatic) | ArgoCD automated sync |
-| Production | `promptyard-prod` | PR updating prod overlay (manual) | ArgoCD automated sync on merge |
+| Environment | Namespace            | Deploy Trigger                       | Sync Mode                      |
+| ----------- | -------------------- | ------------------------------------ | ------------------------------ |
+| Local       | —                    | `./mvnw -pl apps/server quarkus:dev` | N/A                            |
+| Staging     | `promptyard-staging` | Push to `main` (automatic)           | ArgoCD automated sync          |
+| Production  | `promptyard-prod`    | PR updating prod overlay (manual)    | ArgoCD automated sync on merge |
 
 Local development uses Quarkus dev mode with Dev Services — no Kubernetes required.
 
@@ -25,12 +25,12 @@ the Azure CLI. All resources live in a single resource group (`rg-promptyard`) i
 
 ### Resources
 
-| Resource | Name | Purpose |
-|----------|------|---------|
-| Resource Group | `rg-promptyard` | Contains all Azure resources |
-| AKS Cluster | `aks-promptyard` | Kubernetes cluster (3× Standard_D2as_v5 nodes) |
-| Container Registry | `acrpromptyard` | Stores container images (Basic tier) |
-| Managed Identity | `id-promptyard-ci` | CI identity for pushing images to ACR |
+| Resource           | Name               | Purpose                                        |
+| ------------------ | ------------------ | ---------------------------------------------- |
+| Resource Group     | `rg-promptyard`    | Contains all Azure resources                   |
+| AKS Cluster        | `aks-promptyard`   | Kubernetes cluster (3× Standard_D2as_v5 nodes) |
+| Container Registry | `acrpromptyard`    | Stores container images (Basic tier)           |
+| Managed Identity   | `id-promptyard-ci` | CI identity for pushing images to ACR          |
 
 The AKS cluster uses a system-assigned managed identity with an AcrPull role assignment so nodes can
 pull images from ACR without credentials. OIDC issuer and workload identity are enabled for future
@@ -94,15 +94,15 @@ flowchart LR
 
 ### Component Responsibilities
 
-| Component | Tool | Purpose |
-|-----------|------|---------|
-| Infrastructure | Azure Bicep | Provision AKS, ACR, and managed identities |
-| CI Pipeline | GitHub Actions | Build, test, push container images |
-| Container Registry | Azure Container Registry | Store versioned container images |
-| GitOps Controller | ArgoCD | Sync desired state from Git to cluster |
-| Manifest Management | Kustomize | Manage per-environment Kubernetes manifests |
-| Secret Management | Bitnami Sealed Secrets | Encrypt secrets for safe Git storage |
-| Database Management | Zalando Postgres Operator | Manage PostgreSQL instances via CRDs |
+| Component           | Tool                      | Purpose                                     |
+| ------------------- | ------------------------- | ------------------------------------------- |
+| Infrastructure      | Azure Bicep               | Provision AKS, ACR, and managed identities  |
+| CI Pipeline         | GitHub Actions            | Build, test, push container images          |
+| Container Registry  | Azure Container Registry  | Store versioned container images            |
+| GitOps Controller   | ArgoCD                    | Sync desired state from Git to cluster      |
+| Manifest Management | Kustomize                 | Manage per-environment Kubernetes manifests |
+| Secret Management   | Bitnami Sealed Secrets    | Encrypt secrets for safe Git storage        |
+| Database Management | Zalando Postgres Operator | Manage PostgreSQL instances via CRDs        |
 
 ## Manifest Structure
 
@@ -193,28 +193,28 @@ with environment-specific resources and patches:
 
 Key differences between environments:
 
-| Setting | Staging | Production |
-|---------|---------|------------|
-| Replicas | 1 | 3 |
-| CPU requests | 100m | 250m |
-| CPU limits | 500m | 1 |
-| Memory requests | 128 Mi | 256 Mi |
-| Memory limits | 512 Mi | 1 Gi |
-| DB instances | 1 | 3 |
-| DB volume size | 5 Gi | 15 Gi |
-| ArgoCD prune | enabled | disabled (safety) |
+| Setting         | Staging | Production        |
+| --------------- | ------- | ----------------- |
+| Replicas        | 1       | 3                 |
+| CPU requests    | 100m    | 250m              |
+| CPU limits      | 500m    | 1                 |
+| Memory requests | 128 Mi  | 256 Mi            |
+| Memory limits   | 512 Mi  | 1 Gi              |
+| DB instances    | 1       | 3                 |
+| DB volume size  | 5 Gi    | 15 Gi             |
+| ArgoCD prune    | enabled | disabled (safety) |
 
 ### ArgoCD Applications
 
 Five ArgoCD Application resources manage the cluster via an App-of-Apps pattern:
 
-| Application | Type | Source | Target Namespace | Purpose |
-|---|---|---|---|---|
-| `promptyard` (root) | Kustomize directory | `deploy/apps` | — | App of Apps, manages all child apps |
-| `postgres-operator` | Helm chart (`1.*`) | Zalando chart repo | `infra` | PostgreSQL Operator |
-| `sealed-secrets` | Helm chart (`2.*`) | Bitnami chart repo | `infra` | Sealed Secrets controller |
-| `promptyard-staging` | Kustomize directory | `deploy/envs/staging` | `promptyard-staging` | Staging deployment |
-| `promptyard-prod` | Kustomize directory | `deploy/envs/prod` | `promptyard-prod` | Production deployment |
+| Application          | Type                | Source                | Target Namespace     | Purpose                             |
+| -------------------- | ------------------- | --------------------- | -------------------- | ----------------------------------- |
+| `promptyard` (root)  | Kustomize directory | `deploy/apps`         | —                    | App of Apps, manages all child apps |
+| `postgres-operator`  | Helm chart (`1.*`)  | Zalando chart repo    | `infra`              | PostgreSQL Operator                 |
+| `sealed-secrets`     | Helm chart (`2.*`)  | Bitnami chart repo    | `infra`              | Sealed Secrets controller           |
+| `promptyard-staging` | Kustomize directory | `deploy/envs/staging` | `promptyard-staging` | Staging deployment                  |
+| `promptyard-prod`    | Kustomize directory | `deploy/envs/prod`    | `promptyard-prod`    | Production deployment               |
 
 All applications use automated sync with self-healing. The production application has `prune: false`
 to prevent accidental resource deletion. Namespaces are created automatically
@@ -260,7 +260,7 @@ kustomize edit set image ghcr.io/infosupport/promptyard:<staging-sha>
 Pull request verification workflows run on every PR that touches the relevant module:
 
 - **`verify-pull-request-server.yml`** — builds and tests the backend (`./mvnw -pl apps/server
-  verify`) and the frontend (lint + unit tests with pnpm).
+verify`) and the frontend (lint + unit tests with pnpm).
 - **`verify-pull-request-client.yml`** — builds and tests the client library
   (`./mvnw -pl apps/client verify`).
 
@@ -273,6 +273,7 @@ Pull request verification workflows run on every PR that touches the relevant mo
 When setting up the cluster from scratch:
 
 1. **Provision Azure infrastructure** — deploy the AKS cluster, ACR, and CI identity:
+
    ```bash
    az deployment sub create \
      --location westeurope \
@@ -282,6 +283,7 @@ When setting up the cluster from scratch:
    ```
 
 2. **Install ArgoCD**:
+
    ```bash
    kubectl create namespace argocd
    kubectl apply -n argocd \
@@ -290,12 +292,14 @@ When setting up the cluster from scratch:
 
 3. **Apply the root app** — this bootstraps everything else (Sealed Secrets, Postgres Operator, and
    all environment deployments):
+
    ```bash
    kubectl apply -f deploy/root-app.yaml
    ```
 
 4. **Back up the Sealed Secrets encryption key** — do this once the controller is running; losing
    the key makes existing sealed secrets undecryptable:
+
    ```bash
    kubectl get secret -n infra \
      -l sealedsecrets.bitnami.com/sealed-secrets-key \

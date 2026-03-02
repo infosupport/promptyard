@@ -38,8 +38,8 @@ resource aks 'Microsoft.ContainerService/managedClusters@2024-01-01' = {
         vmSize: nodeVmSize
         mode: 'System'
         osType: 'Linux'
-        osDiskType: 'Ephemeral'
-        osDiskSizeGB: 75
+        osDiskType: 'Managed'
+        osDiskSizeGB: 30
       }
     ]
     networkProfile: {
