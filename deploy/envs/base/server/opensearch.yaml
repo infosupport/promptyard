@@ -12,6 +12,12 @@ spec:
     config:
       adminCredentialsSecret:
         name: promptyard-opensearch-admin-credentials
+  tls:
+    http:
+      generate: true
+    transport:
+      generate: true
+      perNode: true
   nodePools:
     - component: nodes
       replicas: 3
