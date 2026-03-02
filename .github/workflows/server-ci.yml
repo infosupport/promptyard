@@ -4,7 +4,8 @@ on:
   push:
     branches: [main]
     paths:
-      - 'apps/server/**'
+      - "apps/server/**"
+      - ".github/workflows/server-ci.yml"
 
 permissions:
   id-token: write
@@ -39,8 +40,12 @@ jobs:
       - name: Log in to ACR
         run: az acr login --name $ACR_NAME
 
-      - name: Build and push image
-        working-directory: apps/server
+      - name: Build and push server image
         run: |
-          docker build -f src/main/docker/Dockerfile.jvm -t $ACR_NAME.azurecr.io/$IMAGE_NAME:${{ github.sha }} .
-          docker push $ACR_NAME.azurecr.io/$IMAGE_NAME:${{ github.sha }}
+          ./mvnw -pl apps/server package \
+            -Dquarkus.container-image.build=true \
+            -Dquarkus.container-image.push=true \
+            -Dquarkus.container-image.registry=$ACR_NAME.azurecr.io \
+            -Dquarkus.container-image.group=infosupport \
+            -Dquarkus.container-image.name=promptyard \
+            -Dquarkus.container-image.tag=${{ github.sha }}
