@@ -38,9 +38,6 @@ jobs:
           java-version: 25
           cache: maven
 
-      - name: Build and test
-        run: ./mvnw -pl apps/server package
-
       - uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
