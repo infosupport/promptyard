@@ -17,4 +17,4 @@ patches:
 
 images:
   - name: acrpromptyard.azurecr.io/infosupport/promptyard
-    newTag: 810922c7c8f494a8541460d88805a200b65a9145
+    newTag: 496f4b8207adfced8934133299ebda54b2ce6068
