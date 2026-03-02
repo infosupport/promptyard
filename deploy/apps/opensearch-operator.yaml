@@ -13,9 +13,6 @@ spec:
     targetRevision: 2.8.0
     helm:
       releaseName: opensearch-operator
-      valuesObject:
-        manager:
-          watchNamespace: ""
   destination:
     server: https://kubernetes.default.svc
     namespace: infra
