@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/infosupport/promptyard
-    targetRevision: gitops-configuration
+    targetRevision: main
     path: deploy/apps
   destination:
     server: https://kubernetes.default.svc

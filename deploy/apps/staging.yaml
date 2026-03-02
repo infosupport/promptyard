@@ -9,7 +9,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/infosupport/promptyard.git
-    targetRevision: gitops-configuration
+    targetRevision: main
     path: deploy/envs/staging
   destination:
     server: https://kubernetes.default.svc
