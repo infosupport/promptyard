@@ -10,14 +10,12 @@ spec:
   source:
     repoURL: https://opensearch-project.github.io/opensearch-k8s-operator
     chart: opensearch-operator
-    targetRevision: 2.*
+    targetRevision: 2.8.0
     helm:
       releaseName: opensearch-operator
       valuesObject:
         manager:
           watchNamespace: ""
-        webhook:
-          enabled: false
   destination:
     server: https://kubernetes.default.svc
     namespace: infra
