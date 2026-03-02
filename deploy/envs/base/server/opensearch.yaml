@@ -8,12 +8,6 @@ spec:
     version: "2"
     httpPort: 9200
     vendor: opensearch
-  security:
-    tls:
-      transport:
-        generate: false
-      http:
-        generate: false
   nodePools:
     - component: nodes
       replicas: 3
