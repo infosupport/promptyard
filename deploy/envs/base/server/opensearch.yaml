@@ -11,7 +11,7 @@ spec:
   security:
     tls:
       transport:
-        generate: true
+        generate: false
       http:
         generate: false
   nodePools:
