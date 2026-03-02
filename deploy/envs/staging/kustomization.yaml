@@ -7,7 +7,7 @@ resources:
   - ../base
   - namespace.yaml
   - configmap.yaml
-  - sealed-secret.yaml
+  - promptyard-server-secret.yaml
   - keycloak-admin-secret.yaml
 
 patches:
