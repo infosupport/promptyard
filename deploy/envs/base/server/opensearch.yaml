@@ -9,6 +9,7 @@ spec:
     httpPort: 9200
     vendor: opensearch
   security:
+    disable: true
     config:
       adminCredentialsSecret:
         name: promptyard-opensearch-admin-credentials
