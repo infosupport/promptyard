@@ -2,7 +2,10 @@
 
 ## Infrastructure Overview
 
-Promptyard runs on a single Kubernetes cluster with two namespaces for staged delivery:
+Promptyard runs on an AKS cluster in Azure (West Europe) with two namespaces for staged delivery.
+The cluster and supporting Azure resources are provisioned via Bicep templates and deployed manually
+with the Azure CLI. This is a temporary setup — the plan is to migrate to an internal Kubernetes
+cluster in the near future.
 
 | Environment | Namespace | Deploy Trigger | Sync Mode |
 |-------------|-----------|----------------|-----------|
@@ -15,15 +18,75 @@ Local development uses Quarkus dev mode with Dev Services — no Kubernetes requ
 Both the root App-of-Apps and the staging application track the `main` branch. The production
 application also tracks `main` but uses `prune: false` to prevent accidental resource deletion.
 
+## Azure Infrastructure
+
+The Azure infrastructure is defined as Bicep templates in `deploy/azure/` and deployed manually via
+the Azure CLI. All resources live in a single resource group (`rg-promptyard`) in West Europe.
+
+### Resources
+
+| Resource | Name | Purpose |
+|----------|------|---------|
+| Resource Group | `rg-promptyard` | Contains all Azure resources |
+| AKS Cluster | `aks-promptyard` | Kubernetes cluster (3× Standard_D2as_v5 nodes) |
+| Container Registry | `acrpromptyard` | Stores container images (Basic tier) |
+| Managed Identity | `id-promptyard-ci` | CI identity for pushing images to ACR |
+
+The AKS cluster uses a system-assigned managed identity with an AcrPull role assignment so nodes can
+pull images from ACR without credentials. OIDC issuer and workload identity are enabled for future
+service integrations.
+
+The CI managed identity (`id-promptyard-ci`) has an AcrPush role on the registry and a federated
+credential for GitHub Actions OIDC, allowing the CI pipeline to authenticate and push images without
+storing secrets.
+
+### Bicep Structure
+
+```
+deploy/azure/
+├── main.bicep            # Subscription-scoped entry point (creates RG, deploys modules)
+├── main.bicepparam       # Parameter values
+└── modules/
+    ├── acr.bicep         # Azure Container Registry
+    ├── aks.bicep         # AKS cluster + AcrPull role assignment
+    └── identity.bicep    # CI managed identity + AcrPush role + GitHub OIDC federation
+```
+
+### Deploying
+
+Preview changes before applying:
+
+```bash
+az deployment sub what-if \
+  --location westeurope \
+  --template-file deploy/azure/main.bicep \
+  --parameters deploy/azure/main.bicepparam
+```
+
+Deploy:
+
+```bash
+az deployment sub create \
+  --location westeurope \
+  --template-file deploy/azure/main.bicep \
+  --parameters deploy/azure/main.bicepparam
+```
+
+Retrieve the kubeconfig after deployment:
+
+```bash
+az aks get-credentials --resource-group rg-promptyard --name aks-promptyard
+```
+
 ## Deployment Pipeline
 
 ```mermaid
 flowchart LR
     Dev[Developer pushes to main] --> CI[CI Pipeline\nGitHub Actions]
-    CI -->|build + push image| GHCR[Container Registry\nghcr.io]
+    CI -->|OIDC login via\nid-promptyard-ci| ACR[Azure Container Registry\nacrpromptyard]
     CI -->|update image tag in\nstaging overlay| Repo[deploy/\nK8s manifests]
     Repo -->|watches| RootApp[ArgoCD Root App\nApp of Apps]
-    GHCR -->|pulls image| K8s[Kubernetes Cluster]
+    ACR -->|AcrPull via\nmanaged identity| AKS[AKS Cluster\naks-promptyard]
     RootApp -->|manages| Infra[infra namespace\nSealed Secrets +\nPostgres Operator]
     RootApp -->|manages| Staging[promptyard-staging]
     RootApp -->|manages| Prod[promptyard-prod]
@@ -33,8 +96,9 @@ flowchart LR
 
 | Component | Tool | Purpose |
 |-----------|------|---------|
+| Infrastructure | Azure Bicep | Provision AKS, ACR, and managed identities |
 | CI Pipeline | GitHub Actions | Build, test, push container images |
-| Container Registry | GitHub Container Registry (ghcr.io) | Store versioned container images |
+| Container Registry | Azure Container Registry | Store versioned container images |
 | GitOps Controller | ArgoCD | Sync desired state from Git to cluster |
 | Manifest Management | Kustomize | Manage per-environment Kubernetes manifests |
 | Secret Management | Bitnami Sealed Secrets | Encrypt secrets for safe Git storage |
@@ -208,20 +272,29 @@ Pull request verification workflows run on every PR that touches the relevant mo
 
 When setting up the cluster from scratch:
 
-1. **Install ArgoCD** — the only manual step:
+1. **Provision Azure infrastructure** — deploy the AKS cluster, ACR, and CI identity:
+   ```bash
+   az deployment sub create \
+     --location westeurope \
+     --template-file deploy/azure/main.bicep \
+     --parameters deploy/azure/main.bicepparam
+   az aks get-credentials --resource-group rg-promptyard --name aks-promptyard
+   ```
+
+2. **Install ArgoCD**:
    ```bash
    kubectl create namespace argocd
    kubectl apply -n argocd \
      -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
    ```
 
-2. **Apply the root app** — this bootstraps everything else (Sealed Secrets, Postgres Operator, and
+3. **Apply the root app** — this bootstraps everything else (Sealed Secrets, Postgres Operator, and
    all environment deployments):
    ```bash
    kubectl apply -f deploy/root-app.yaml
    ```
 
-3. **Back up the Sealed Secrets encryption key** — do this once the controller is running; losing
+4. **Back up the Sealed Secrets encryption key** — do this once the controller is running; losing
    the key makes existing sealed secrets undecryptable:
    ```bash
    kubectl get secret -n infra \
@@ -229,5 +302,5 @@ When setting up the cluster from scratch:
      -o yaml > sealed-secrets-key-backup.yaml
    ```
 
-4. **Seal secrets** — encrypt real values per environment with `kubeseal` (see
+5. **Seal secrets** — encrypt real values per environment with `kubeseal` (see
    [Secret Management](08-crosscutting-concepts.md#secret-management) in Crosscutting Concepts).
