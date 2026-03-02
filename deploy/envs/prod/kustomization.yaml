@@ -8,7 +8,6 @@ resources:
   - namespace.yaml
   - configmap.yaml
   - sealed-secret.yaml
-  - ghcr-pull-secret.yaml
 
 patches:
   - path: patches/deployment-patch.yaml
@@ -16,5 +15,5 @@ patches:
   - path: patches/database-patch.yaml
 
 images:
-  - name: ghcr.io/infosupport/promptyard
+  - name: promptyardacr.azurecr.io/infosupport/promptyard
     newTag: 0024ef5e517a233113c2027978be5852abe6780f
