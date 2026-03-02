@@ -8,12 +8,10 @@ resources:
   - namespace.yaml
   - configmap.yaml
   - promptyard-server-secret.yaml
-  - keycloak-admin-secret.yaml
 
 patches:
   - path: patches/deployment-patch.yaml
   - path: patches/ingress-patch.yaml
-  - path: patches/database-patch.yaml
 
 images:
   - name: acrpromptyard.azurecr.io/infosupport/promptyard
