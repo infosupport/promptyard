@@ -124,7 +124,7 @@ Kubernetes manifests live in `deploy/`. Full details in `docs/architecture/07-de
 
 ### Key Rules
 
-- **Never commit plain-text secrets.** All secrets are `SealedSecret` resources encrypted with `kubeseal`. The files `sealed-secret.yaml` and `ghcr-pull-secret.yaml` contain ciphertext — do not edit them by hand.
+- **Never commit plain-text secrets.** All secrets are `SealedSecret` resources encrypted with `kubeseal`. The `sealed-secret.yaml` files contain ciphertext — do not edit them by hand.
 - **Production has `prune: false`** in its ArgoCD Application (`deploy/apps/prod.yaml`). Do not change this — it prevents accidental resource deletion.
 - **Infrastructure deploys to the `infra` namespace**, not `kube-system`. Both Sealed Secrets and Postgres Operator run there.
 

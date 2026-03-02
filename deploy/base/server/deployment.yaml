@@ -18,11 +18,9 @@ spec:
         app.kubernetes.io/component: server
         app.kubernetes.io/part-of: promptyard
     spec:
-      imagePullSecrets:
-        - name: ghcr-pull-secret
       containers:
         - name: server
-          image: ghcr.io/infosupport/promptyard:latest
+          image: promptyardacr.azurecr.io/infosupport/promptyard:latest
           ports:
             - name: http
               containerPort: 8080

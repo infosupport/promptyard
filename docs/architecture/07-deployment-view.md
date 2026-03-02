@@ -137,7 +137,6 @@ deploy/
     │   ├── namespace.yaml
     │   ├── configmap.yaml
     │   ├── sealed-secret.yaml
-    │   ├── ghcr-pull-secret.yaml
     │   └── patches/
     │       ├── deployment-patch.yaml
     │       ├── ingress-patch.yaml
@@ -147,7 +146,6 @@ deploy/
         ├── namespace.yaml
         ├── configmap.yaml
         ├── sealed-secret.yaml
-        ├── ghcr-pull-secret.yaml
         └── patches/
             ├── deployment-patch.yaml
             ├── ingress-patch.yaml
@@ -159,11 +157,11 @@ deploy/
 The base layer in `deploy/base/server/` defines the common Kubernetes resources shared across all
 environments:
 
-- **Deployment** — single replica of `ghcr.io/infosupport/promptyard`, with configuration injected
+- **Deployment** — single replica of `promptyardacr.azurecr.io/infosupport/promptyard`, with configuration injected
   via a `ConfigMap` (`promptyard-server-config`) and a `Secret` (`promptyard-server-secret`).
   Database credentials are sourced from a Postgres Operator-managed secret
   (`promptyard-server.promptyard-db.credentials.postgresql.acid.zalan.do`). Uses an image pull
-  secret (`ghcr-pull-secret`) for pulling from ghcr.io. Includes readiness and liveness probes on
+  AKS uses a managed identity to pull images from Azure Container Registry. Includes readiness and liveness probes on
   the Quarkus health endpoints (`/q/health/ready`, `/q/health/live`) and resource limits
   (256–512 Mi memory, 250–500m CPU).
 - **Service** — ClusterIP service exposing port 80, forwarding to the container's `http` port
@@ -184,8 +182,6 @@ with environment-specific resources and patches:
 - **SealedSecret** (`promptyard-server-secret`) — encrypted secret values for OIDC client secret
   and session encryption key. The Sealed Secrets controller decrypts these into regular `Secret`
   resources at runtime.
-- **SealedSecret** (`ghcr-pull-secret`) — encrypted Docker registry credentials for pulling images
-  from ghcr.io.
 - **Image tag** — overrides the container image tag (updated by CI for staging, manually via PR for
   production).
 - **Patches** — strategic merge patches that modify deployment (replicas, resources), ingress
@@ -227,7 +223,7 @@ to prevent accidental resource deletion. Namespaces are created automatically
 ```mermaid
 flowchart TD
     A[Push to main] --> B[CI builds container image]
-    B --> C[Push image to ghcr.io with SHA tag]
+    B --> C[Push image to ACR with SHA tag]
     C --> D[CI updates image tag in\ndeploy/envs/staging/kustomization.yaml]
     D --> E[CI commits and pushes to main]
     E --> F[ArgoCD detects change]
@@ -251,7 +247,7 @@ Production deployments are gated by pull request review. To promote a staging-ve
 
 ```bash
 cd deploy/envs/prod
-kustomize edit set image ghcr.io/infosupport/promptyard:<staging-sha>
+kustomize edit set image promptyardacr.azurecr.io/infosupport/promptyard:<staging-sha>
 # Create PR, review, merge — ArgoCD auto-syncs
 ```
 
@@ -264,7 +260,7 @@ verify`) and the frontend (lint + unit tests with pnpm).
 - **`verify-pull-request-client.yml`** — builds and tests the client library
   (`./mvnw -pl apps/client verify`).
 
-> **Note:** The CI workflow for building container images, pushing to ghcr.io, and updating the
+> **Note:** The CI workflow for building container images, pushing to ACR, and updating the
 > staging image tag on merge to `main` is not yet implemented. Currently only PR verification is
 > in place.
 
