@@ -8,6 +8,7 @@ resources:
   - namespace.yaml
   - configmap.yaml
   - promptyard-server-secret.yaml
+  - promptyard-opensearch-admin-credentials.yaml
 
 patches:
   - path: patches/deployment-patch.yaml

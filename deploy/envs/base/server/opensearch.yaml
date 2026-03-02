@@ -8,6 +8,10 @@ spec:
     version: "2"
     httpPort: 9200
     vendor: opensearch
+  security:
+    config:
+      adminCredentialsSecret:
+        name: promptyard-opensearch-admin-credentials
   nodePools:
     - component: nodes
       replicas: 3
