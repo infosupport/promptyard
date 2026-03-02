@@ -1,0 +1,16 @@
+apiVersion: opensearch.org/v1
+kind: OpenSearchCluster
+metadata:
+  name: promptyard-opensearch
+spec:
+  nodePools:
+    - component: nodes
+      replicas: 3
+      diskSize: "30Gi"
+      resources:
+        requests:
+          memory: "4Gi"
+          cpu: "1000m"
+        limits:
+          memory: "4Gi"
+          cpu: "1000m"
