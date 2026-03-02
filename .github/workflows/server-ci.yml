@@ -22,14 +22,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@v4
+        with:
+          package_manager_version: "latest"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: apps/server/src/main/webui/pnpm-lock.yaml
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 25
           cache: maven
 
-      - name: Build
-        run: ./mvnw -pl apps/server package -DskipTests
+      - name: Build and test
+        run: ./mvnw -pl apps/server package
 
       - uses: azure/login@v2
         with:
