@@ -5,7 +5,7 @@ metadata:
 spec:
   general:
     serviceName: promptyard-opensearch
-    version: "2"
+    version: "3.5.0"
     httpPort: 9200
     vendor: opensearch
   security:
