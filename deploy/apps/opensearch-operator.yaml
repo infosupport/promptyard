@@ -16,6 +16,8 @@ spec:
       valuesObject:
         manager:
           watchNamespace: ""
+        webhook:
+          enabled: false
   destination:
     server: https://kubernetes.default.svc
     namespace: infra
