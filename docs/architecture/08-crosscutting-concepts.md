@@ -82,6 +82,105 @@ URL-friendly slugs serve as public identifiers instead of numeric IDs:
 5. Check uniqueness (scoped by content type for content items)
 6. If duplicate, append incrementing counter (`-2`, `-3`, ...) until unique
 
+## Local Kubernetes Development
+
+Use this setup only for testing the deployment manifests. You can run the application 
+without running on Kubernetes with `./mvnw -pl apps/serverquarkus:dev`. We recommend 
+that approach over the steps documented here.
+
+### Prerequisites
+
+- [kind](https://kind.sigs.k8s.io/) — Kubernetes in Docker
+- [kubectl](https://kubernetes.io/docs/tasks/tools/) — Kubernetes CLI
+
+### Create the cluster
+
+```bash
+kind create cluster --config deploy/kind-config.yaml
+```
+
+This creates a single-node cluster with port mappings for the nginx ingress controller (host ports 80 and 443).
+
+### Install the nginx ingress controller
+
+```bash
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+```
+
+Wait for the controller to be ready:
+
+```bash
+kubectl wait --namespace ingress-nginx \
+  --for=condition=ready pod \
+  --selector=app.kubernetes.io/component=controller \
+  --timeout=90s
+```
+
+### Add a hosts entry
+
+Add the following line to `/etc/hosts` so that `promptyard.local` resolves to your local cluster:
+
+```
+127.0.0.1 promptyard.local
+```
+
+### Deploy the application
+
+```bash
+kubectl kustomize deploy/base/server/ | kubectl apply -f -
+```
+
+### Access the application
+
+Open [http://promptyard.local](http://promptyard.local) in your browser.
+
+## Secret Management
+
+Secrets (OIDC client secrets, database credentials, session encryption keys) are managed with
+[Bitnami Sealed Secrets](https://github.com/bitnami-labs/sealed-secrets). The Sealed Secrets
+controller runs in `kube-system` and is deployed via an ArgoCD Application
+(`deploy/infra/sealed-secrets.yaml`).
+
+### How it works
+
+1. A `SealedSecret` resource is stored in Git with encrypted values.
+2. The controller decrypts the `SealedSecret` into a regular Kubernetes `Secret` at runtime.
+3. Pods reference the resulting `Secret` as usual — no application code changes needed.
+
+Each environment overlay (`deploy/envs/staging/server/`, `deploy/envs/prod/server/`) contains a
+`sealed-secret.yaml` with the encrypted data for that environment.
+
+### Sealing a secret value
+
+Fetch the controller's public certificate and encrypt a single value:
+
+```bash
+kubeseal --fetch-cert \
+  --controller-name=sealed-secrets-controller \
+  --controller-namespace=kube-system \
+  > sealed-secrets-cert.pem
+
+echo -n "my-secret-value" | kubeseal --raw \
+  --cert sealed-secrets-cert.pem \
+  --namespace promptyard-staging \
+  --name promptyard-server-secret
+```
+
+Paste the output into the corresponding key in `sealed-secret.yaml` under `spec.encryptedData`.
+
+### Rotating secrets
+
+1. Seal the new value with `kubeseal --raw` as shown above.
+2. Replace the old encrypted value in the `sealed-secret.yaml` for the target environment.
+3. Commit and push — ArgoCD syncs the updated `SealedSecret` and the controller re-creates the
+   `Secret` with the new plaintext.
+
+### Certificate rotation
+
+The controller rotates its sealing key pair every 30 days by default. Old keys are retained so
+previously sealed secrets remain decryptable. If you need to re-encrypt all secrets against the
+latest certificate, fetch the new cert and re-seal each value.
+
 ## User Interface
 
 ## Error Handling

@@ -118,6 +118,32 @@ A Quarkus/Kotlin library for client-side integrations. Minimal dependencies (qua
 - **PostgreSQL** and **Keycloak** are provisioned automatically via Quarkus Dev Services when running the server in dev mode
 - Keycloak realm pre-configured via `apps/server/docker/keycloak/promptyard-realm.json`
 
+## Deployment (GitOps)
+
+Kubernetes manifests live in `deploy/`. Full details in `docs/architecture/07-deployment-view.md`.
+
+### Key Rules
+
+- **Never commit plain-text secrets.** All secrets are `SealedSecret` resources encrypted with `kubeseal`. The files `sealed-secret.yaml` and `ghcr-pull-secret.yaml` contain ciphertext — do not edit them by hand.
+- **Production has `prune: false`** in its ArgoCD Application (`deploy/apps/prod.yaml`). Do not change this — it prevents accidental resource deletion.
+- **Infrastructure deploys to the `infra` namespace**, not `kube-system`. Both Sealed Secrets and Postgres Operator run there.
+
+### Structure
+
+- **`deploy/root-app.yaml`** — the single ArgoCD entry point (App of Apps). Apply this to bootstrap the entire cluster.
+- **`deploy/apps/`** — child ArgoCD Application manifests (postgres-operator, sealed-secrets, staging, prod). The root app watches this directory.
+- **`deploy/envs/base/`** — shared Kustomize base referenced by environment overlays. When modifying base resources (deployment, service, ingress, database), edit the files here.
+- **`deploy/envs/staging/`** and **`deploy/envs/prod/`** — environment overlays. Each contains a namespace, configmap, sealed secrets, and patches that customize replicas, resources, ingress hostname, and database sizing.
+- **`deploy/base/server/`** — original base manifests (duplicated in `envs/base/server/`; overlays reference `envs/base/`).
+
+### Database
+
+PostgreSQL is managed by the Zalando Postgres Operator via a CRD (`acid.zalan.do/v1`) in `database.yaml`. The operator auto-creates a secret named `promptyard-server.promptyard-db.credentials.postgresql.acid.zalan.do` containing the DB username and password — the deployment references this secret directly.
+
+### Image Tags
+
+Image tags are set in each overlay's `kustomization.yaml` under the `images:` block. CI updates staging; production is updated manually via PR.
+
 ## Documentation
 
 - All documentation must be written in **English**. Some Dutch files exist in the repo but were provided externally — do not use them as a language precedent.

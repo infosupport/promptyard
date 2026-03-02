@@ -1,0 +1,20 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: promptyard-prod
+
+resources:
+  - ../base
+  - namespace.yaml
+  - configmap.yaml
+  - sealed-secret.yaml
+  - ghcr-pull-secret.yaml
+
+patches:
+  - path: patches/deployment-patch.yaml
+  - path: patches/ingress-patch.yaml
+  - path: patches/database-patch.yaml
+
+images:
+  - name: ghcr.io/infosupport/promptyard
+    newTag: 0024ef5e517a233113c2027978be5852abe6780f

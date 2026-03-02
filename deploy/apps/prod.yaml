@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: promptyard-prod
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/infosupport/promptyard.git
+    targetRevision: main
+    path: deploy/envs/prod
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: promptyard-prod
+  syncPolicy:
+    automated:
+      prune: false # Safety: don't auto-prune prod
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

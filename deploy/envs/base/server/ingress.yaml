@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: promptyard-server
+  labels:
+    app.kubernetes.io/name: promptyard-server
+    app.kubernetes.io/component: server
+    app.kubernetes.io/part-of: promptyard
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: promptyard.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: promptyard-server
+                port:
+                  name: http
