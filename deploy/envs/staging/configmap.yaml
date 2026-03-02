@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: promptyard-server-config
 data:
-  QUARKUS_OIDC_AUTH_SERVER_URL: "https://keycloak.local/realms/promptyard"
-  QUARKUS_OIDC_CLIENT_ID: "REPLACE_WITH_STAGING_OIDC_CLIENT_ID"
+  QUARKUS_OIDC_AUTH_SERVER_URL: "https://login.microsoftonline.com/336d11a1-bc27-4999-a4e0-3a6ec33675b0/v2.0"
+  QUARKUS_OIDC_CLIENT_ID: "beec08ca-2273-4359-b284-134ebdbd09b6"
   QUARKUS_DATASOURCE_JDBC_URL: "jdbc:postgresql://promptyard-db:5432/promptyard"
   QUARKUS_OPENSEARCH_HOSTS: "REPLACE_WITH_STAGING_OPENSEARCH_HOST:9200"
