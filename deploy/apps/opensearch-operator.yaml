@@ -10,7 +10,7 @@ spec:
   source:
     repoURL: https://opensearch-project.github.io/opensearch-k8s-operator
     chart: opensearch-operator
-    targetRevision: 2.8.0
+    targetRevision: 2.8.3
     helm:
       releaseName: opensearch-operator
   destination:
