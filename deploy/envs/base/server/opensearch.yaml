@@ -1,4 +1,4 @@
-apiVersion: opensearch.opster.io/v1
+apiVersion: opensearch.org/v1
 kind: OpenSearchCluster
 metadata:
   name: promptyard-opensearch
@@ -9,16 +9,13 @@ spec:
     httpPort: 9200
     vendor: opensearch
   security:
-    disable: true
     config:
-      adminCredentialsSecret:
-        name: promptyard-opensearch-admin-credentials
-  tls:
-    http:
-      generate: true
-    transport:
-      generate: true
-      perNode: true
+    tls:
+      http:
+        generate: true
+      transport:
+        generate: true
+        perNode: true
   nodePools:
     - component: nodes
       replicas: 3
