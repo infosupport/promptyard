@@ -63,6 +63,16 @@ spec:
                 configMapKeyRef:
                   name: promptyard-server-config
                   key: QUARKUS_OPENSEARCH_HOSTS
+            - name: OPENSEARCH_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: promptyard-opensearch-admin-password
+                  key: username
+            - name: OPENSEARCH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: promptyard-opensearch-admin-password
+                  key: password
             - name: QUARKUS_OIDC_CLIENT_SECRET
               valueFrom:
                 secretKeyRef:
