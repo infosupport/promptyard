@@ -6,7 +6,7 @@ param location string
 @description('Number of AKS nodes')
 @minValue(1)
 @maxValue(10)
-param nodeCount int = 3
+param nodeCount int = 4
 
 @description('VM size for AKS nodes')
 param nodeVmSize string = 'Standard_D2as_v5'
