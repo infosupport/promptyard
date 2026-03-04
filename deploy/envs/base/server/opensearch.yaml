@@ -11,6 +11,8 @@ spec:
   security:
     config:
     tls:
+      http:
+        generate: true
       transport:
         generate: true
         perNode: true
