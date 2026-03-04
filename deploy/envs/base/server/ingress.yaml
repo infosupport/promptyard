@@ -7,10 +7,9 @@ metadata:
     app.kubernetes.io/component: server
     app.kubernetes.io/part-of: promptyard
 spec:
-  ingressClassName: nginx
+  ingressClassName: webapprouting.kubernetes.azure.com
   rules:
-    - host: promptyard.local
-      http:
+    - http:
         paths:
           - path: /
             pathType: Prefix
