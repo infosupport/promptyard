@@ -83,7 +83,7 @@ spec:
                 secretKeyRef:
                   name: promptyard-server-secret
                   key: QUARKUS_HTTP_AUTH_SESSION_ENCRYPTION_KEY
-            - name: JAVA_OPTS_APPEND
+            - name: JAVA_TOOL_OPTIONS
               value: "-Djavax.net.ssl.trustStore=/truststore/cacerts -Djavax.net.ssl.trustStorePassword=changeit"
           volumeMounts:
             - name: truststore
