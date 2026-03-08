@@ -22,6 +22,18 @@ class ContentItemsResource {
         val totalPages = query.pageCount()
         val totalItems = query.count()
         val items = query.list().map { item ->
+            val fileCount = if (item.contentType == "skill") {
+                val skill = item as Skill
+                skill.fileCount
+            } else {
+                null
+            }
+            val fileSize = if (item.contentType == "skill") {
+                val skill = item as Skill
+                skill.fileSize
+            } else {
+                null
+            }
             _root_ide_package_.com.infosupport.promptyard.content.ContentItemResponse(
                 slug = item.slug,
                 title = item.title,
@@ -30,7 +42,9 @@ class ContentItemsResource {
                 contentType = item.contentType,
                 author = ContentItemAuthorResponse(fullName = item.author.fullName, slug = item.author.slug),
                 createdAt = item.createdAt.toString(),
-                modifiedAt = item.modifiedAt?.toString()
+                modifiedAt = item.modifiedAt?.toString(),
+                fileCount = fileCount,
+                fileSize = fileSize
             )
         }
 

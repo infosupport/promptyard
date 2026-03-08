@@ -3,21 +3,18 @@ package com.infosupport.promptyard.content
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ContentItemAuthorResponse(
-    val fullName: String,
-    val slug: String,
-)
-
-@Serializable
-data class ContentItemResponse(
-    val slug: String,
+data class SkillDetailResponse(
     val title: String,
+    val slug: String,
     val description: String,
     val tags: List<String>,
     val contentType: String,
-    val author: ContentItemAuthorResponse,
     val createdAt: String,
     val modifiedAt: String?,
-    val fileCount: Int?,
-    val fileSize: Long?
+    val author: AuthorSummary,
+    val isOwner: Boolean,
+    val fileCount: Int,
+    val fileSize: Long,
+    val files: List<SkillFileResponse>,
+    val previewContent: String?
 )

@@ -40,6 +40,16 @@ const router = createRouter({
           component: () => import('@/views/EditPromptView.vue'),
         },
         {
+          path: 'content/skills/new',
+          name: 'upload-skill',
+          component: () => import('@/views/UploadSkillView.vue'),
+        },
+        {
+          path: 'content/skills/:slug',
+          name: 'skill-detail',
+          component: () => import('@/views/SkillDetailView.vue'),
+        },
+        {
           path: 'profiles/me',
           name: 'my-profile',
           component: () => import('@/views/MyProfileView.vue'),

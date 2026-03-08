@@ -1,5 +1,6 @@
 package com.infosupport.promptyard.content
 
+import com.infosupport.promptyard.profiles.UserProfile
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheQuery
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepository
 import io.quarkus.panache.common.Page
@@ -37,5 +38,15 @@ class ContentItemRepository : PanacheRepository<com.infosupport.promptyard.conte
         val sort = Sort.by("createdAt", Sort.Direction.Descending)
         return find("authorId = ?1", sort, authorId)
             .page(Page.of(pageIndex, _root_ide_package_.com.infosupport.promptyard.content.PAGE_SIZE))
+    }
+
+    fun findPagedByContentType(contentType: String, pageIndex: Int): PanacheQuery<com.infosupport.promptyard.content.ContentItem> {
+        val sort = Sort.by("createdAt", Sort.Direction.Descending)
+        return find("contentType = ?1", sort, contentType)
+            .page(Page.of(pageIndex, _root_ide_package_.com.infosupport.promptyard.content.PAGE_SIZE))
+    }
+
+    fun countByContentType(contentType: String): Long {
+        return count("contentType = ?1", contentType)
     }
 }

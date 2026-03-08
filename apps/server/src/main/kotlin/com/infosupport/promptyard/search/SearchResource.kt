@@ -80,6 +80,8 @@ class SearchResource {
                     ),
                     createdAt = doc.createdAt.toString(),
                     modifiedAt = doc.modifiedAt?.toString(),
+                    fileCount = null,
+                    fileSize = null,
                 )
             }
 
