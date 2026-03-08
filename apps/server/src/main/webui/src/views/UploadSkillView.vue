@@ -141,7 +141,7 @@ defineExpose({ form, onSubmit, submitting })
         </FormItem>
       </FormField>
 
-      <FormField v-slot="{ value, handleChange }" name="zipFile">
+      <FormField v-slot="{ handleChange }" name="zipFile">
         <FormItem>
           <FormLabel>Zip File</FormLabel>
           <FormControl>
