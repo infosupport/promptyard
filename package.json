@@ -20,11 +20,11 @@
     "lint:fix": "bunx --bun @biomejs/biome lint --write",
     "format": "bunx --bun @biomejs/biome format --write",
     "format:check": "bunx --bun @biomejs/biome format --check",
-    "compile-windows-x64": "bun build --compile --target=bun-windows-x64 ./src/index.ts --outfile=dist/win-x64/promptyard.exe",
-    "compile-windows-arm64": "bun build --compile --target=bun-windows-arm64 ./src/index.ts --outfile=dist/win-arm64/promptyard.exe",
-    "compile-mac": "bun build --compile --target=bun-darwin-arm64 ./src/index.ts --outfile=dist/mac-arm64/promptyard",
-    "compile-linux-x64": "bun build --compile --target=bun-linux-x64 ./src/index.ts --outfile=dist/linux-x64/promptyard",
-    "compile-linux-arm64": "bun build --compile --target=bun-linux-arm64 ./src/index.ts --outfile=dist/linux-arm64/promptyard"
+    "compile-windows-x64": "bun build --compile --target=bun-windows-x64 ./src/index.ts --outfile=dist/promptyard-win-x64.exe",
+    "compile-windows-arm64": "bun build --compile --target=bun-windows-arm64 ./src/index.ts --outfile=dist/promptyard-win-arm64.exe",
+    "compile-mac-arm64": "bun build --compile --target=bun-darwin-arm64 ./src/index.ts --outfile=dist/promptyard-darwin-arm64",
+    "compile-linux-x64": "bun build --compile --target=bun-linux-x64 ./src/index.ts --outfile=dist/promptyard-linux-x64",
+    "compile-linux-arm64": "bun build --compile --target=bun-linux-arm64 ./src/index.ts --outfile=dist/promptyard-linux-arm64"
   },
   "dependencies": {
     "commander": "^14.0.3",
