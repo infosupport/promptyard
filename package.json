@@ -31,5 +31,5 @@
     "frontmatter": "^0.0.3",
     "zod": "^4.3.6"
   },
-  "version": "0.1.2"
+  "version": "0.1.3"
 }
