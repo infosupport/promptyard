@@ -31,8 +31,8 @@ jobs:
 
       - name: Publish to npm
         run: |
-          bunx npm set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
-          bun publish --provenance --access public
+          npm set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
+          npm publish
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
