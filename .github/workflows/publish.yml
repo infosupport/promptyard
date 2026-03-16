@@ -30,9 +30,10 @@ jobs:
           bun run compile-macos-arm64
 
       - name: Publish to npm
-        run: bun publish --provenance --access public
+        run: |
+          bun publish --provenance --access public
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
