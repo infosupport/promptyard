@@ -1,5 +1,5 @@
 # .github/workflows/publish.yml
-name: Publish to npm
+name: Publish release
 
 on:
   push:
@@ -10,8 +10,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # needed to create GitHub release
-      id-token: write # needed for npm provenance
+      contents: write
     steps:
       - uses: actions/checkout@v5
 
