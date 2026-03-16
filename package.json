@@ -19,7 +19,7 @@
 		"lint": "bunx --bun @biomejs/biome lint",
 		"lint:fix": "bunx --bun @biomejs/biome lint --write",
 		"format": "bunx --bun @biomejs/biome format --write",
-		"format:check": "bunx --bun @biomejs/biome format --check",
+		"format:check": "bunx --bun @biomejs/biome format",
 		"compile-windows-x64": "bun build --compile --target=bun-windows-x64 ./src/index.ts --outfile=dist/promptyard-win-x64.exe",
 		"compile-windows-arm64": "bun build --compile --target=bun-windows-arm64 ./src/index.ts --outfile=dist/promptyard-win-arm64.exe",
 		"compile-mac-arm64": "bun build --compile --target=bun-darwin-arm64 ./src/index.ts --outfile=dist/promptyard-darwin-arm64",
