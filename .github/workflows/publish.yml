@@ -30,9 +30,7 @@ jobs:
           bun run compile-macos-arm64
 
       - name: Publish to npm
-        run: |
-          npm set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
-          npm publish
+        run: npm publish
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
