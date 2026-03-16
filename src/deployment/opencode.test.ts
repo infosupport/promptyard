@@ -97,7 +97,11 @@ describe("OpenCodeDeployer.deployRepository agents", () => {
 		const agent = new Agent("my-agent", "An agent", "/src/my-agent.md");
 		const deployer = new OpenCodeDeployer();
 
-		await deployer.deployRepository(makeRepository([], [agent]), "/target", false);
+		await deployer.deployRepository(
+			makeRepository([], [agent]),
+			"/target",
+			false,
+		);
 
 		expect(copyToSpy).toHaveBeenCalledWith(
 			"/target/.opencode/skills/my-agent/",
@@ -109,7 +113,11 @@ describe("OpenCodeDeployer.deployRepository agents", () => {
 		const agent = new Agent("my-agent", "An agent", "/src/my-agent.md");
 		const deployer = new OpenCodeDeployer();
 
-		await deployer.deployRepository(makeRepository([], [agent]), "/target", true);
+		await deployer.deployRepository(
+			makeRepository([], [agent]),
+			"/target",
+			true,
+		);
 
 		expect(copyToSpy).toHaveBeenCalledWith(
 			"/target/.opencode/skills/my-agent/",

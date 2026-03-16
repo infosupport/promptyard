@@ -91,7 +91,11 @@ describe("ClaudeDeployer.deployRepository agents", () => {
 		const agent = new Agent("my-agent", "An agent", "/src/my-agent.md");
 		const deployer = new ClaudeDeployer();
 
-		await deployer.deployRepository(makeRepository([], [agent]), "/target", false);
+		await deployer.deployRepository(
+			makeRepository([], [agent]),
+			"/target",
+			false,
+		);
 
 		expect(copyToSpy).toHaveBeenCalledWith(
 			"/target/.claude/agents/my-agent/",
@@ -103,7 +107,11 @@ describe("ClaudeDeployer.deployRepository agents", () => {
 		const agent = new Agent("my-agent", "An agent", "/src/my-agent.md");
 		const deployer = new ClaudeDeployer();
 
-		await deployer.deployRepository(makeRepository([], [agent]), "/target", true);
+		await deployer.deployRepository(
+			makeRepository([], [agent]),
+			"/target",
+			true,
+		);
 
 		expect(copyToSpy).toHaveBeenCalledWith(
 			"/target/.claude/agents/my-agent/",
