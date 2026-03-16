@@ -6,53 +6,53 @@ import type { Deployer } from "./base";
 import { confirm } from "../confirm";
 
 export class OpenCodeDeployer implements Deployer {
-	async deployRepository(
-		repo: Repository,
-		targetDirectory: string,
-		force: boolean,
-	): Promise<void> {
-		await Promise.all([
-			this.deploySkills(targetDirectory, repo.skills, force),
-			this.deployAgents(targetDirectory, repo.agents, force),
-		]);
-	}
+  async deployRepository(
+    repo: Repository,
+    targetDirectory: string,
+    force: boolean,
+  ): Promise<void> {
+    await Promise.all([
+      this.deploySkills(targetDirectory, repo.skills, force),
+      this.deployAgents(targetDirectory, repo.agents, force),
+    ]);
+  }
 
-	private async deploySkills(
-		targetDirectory: string,
-		skills: Skill[],
-		force: boolean,
-	): Promise<void> {
-		const outputSkillsDirectory = `${targetDirectory}/.opencode/skills/`;
+  private async deploySkills(
+    targetDirectory: string,
+    skills: Skill[],
+    force: boolean,
+  ): Promise<void> {
+    const outputSkillsDirectory = `${targetDirectory}/.opencode/skills/`;
 
-		for (const skill of skills) {
-			const outputSkillPath = `${outputSkillsDirectory}${skill.name}/`;
+    for (const skill of skills) {
+      const outputSkillPath = `${outputSkillsDirectory}${skill.name}/`;
 
-			const exists = await fs
-				.access(outputSkillPath)
-				.then(() => true)
-				.catch(() => false);
+      const exists = await fs
+        .access(outputSkillPath)
+        .then(() => true)
+        .catch(() => false);
 
-			if (exists && !force) {
-				const confirmed = await confirm(
-					`Skill "${skill.name}" already exists. Replace it?`,
-				);
-				if (!confirmed) continue;
-			}
+      if (exists && !force) {
+        const confirmed = await confirm(
+          `Skill "${skill.name}" already exists. Replace it?`,
+        );
+        if (!confirmed) continue;
+      }
 
-			await skill.copyTo(outputSkillPath);
-		}
-	}
+      await skill.copyTo(outputSkillPath);
+    }
+  }
 
-	private async deployAgents(
-		targetDirectory: string,
-		agents: Agent[],
-		force: boolean,
-	): Promise<void> {
-		const outputAgentsDirectory = `${targetDirectory}/.opencode/agents/`;
+  private async deployAgents(
+    targetDirectory: string,
+    agents: Agent[],
+    force: boolean,
+  ): Promise<void> {
+    const outputAgentsDirectory = `${targetDirectory}/.opencode/agents/`;
 
-		for (const agent of agents) {
-			const outputAgentPath = `${outputAgentsDirectory}${agent.name}/`;
-			await agent.copyTo(outputAgentPath, force);
-		}
-	}
+    for (const agent of agents) {
+      const outputAgentPath = `${outputAgentsDirectory}${agent.name}/`;
+      await agent.copyTo(outputAgentPath, force);
+    }
+  }
 }

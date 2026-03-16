@@ -3,41 +3,41 @@ import { RepositoryNotFoundError } from "../errors";
 import { loadRepositories, saveRepositories } from "../project/repositories";
 
 interface RemoveProjectRepositoryOptions {
-	name: string;
+  name: string;
 }
 
 export async function removeProjectRepository(
-	options: RemoveProjectRepositoryOptions,
+  options: RemoveProjectRepositoryOptions,
 ) {
-	const repositorySettings = await loadRepositories();
+  const repositorySettings = await loadRepositories();
 
-	const exists = repositorySettings.repositories.some(
-		(r) => r.name === options.name,
-	);
+  const exists = repositorySettings.repositories.some(
+    (r) => r.name === options.name,
+  );
 
-	if (!exists) {
-		throw new RepositoryNotFoundError(
-			`Repository "${options.name}" is not registered in this project.`,
-		);
-	}
+  if (!exists) {
+    throw new RepositoryNotFoundError(
+      `Repository "${options.name}" is not registered in this project.`,
+    );
+  }
 
-	const confirmed = await confirm(
-		`Remove repository "${options.name}" from the project? Any deployed content will be left behind.`,
-	);
+  const confirmed = await confirm(
+    `Remove repository "${options.name}" from the project? Any deployed content will be left behind.`,
+  );
 
-	if (!confirmed) {
-		return;
-	}
+  if (!confirmed) {
+    return;
+  }
 
-	const updated = repositorySettings.repositories.filter(
-		(r) => r.name !== options.name,
-	);
+  const updated = repositorySettings.repositories.filter(
+    (r) => r.name !== options.name,
+  );
 
-	await saveRepositories(
-		{
-			...repositorySettings,
-			repositories: updated,
-		} as typeof repositorySettings,
-		false,
-	);
+  await saveRepositories(
+    {
+      ...repositorySettings,
+      repositories: updated,
+    } as typeof repositorySettings,
+    false,
+  );
 }
