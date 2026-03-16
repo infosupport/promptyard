@@ -35,4 +35,4 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: "*"
-          working-directory: dist
+          working_directory: dist
