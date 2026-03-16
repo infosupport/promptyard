@@ -31,7 +31,7 @@ jobs:
 
       - name: Publish to npm
         run: |
-          bun npm set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
+          bunx npm set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
           bun publish --provenance --access public
 
       - name: Create GitHub Release
