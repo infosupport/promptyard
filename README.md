@@ -14,6 +14,8 @@ Download the latest binary for your platform from the [GitHub Releases page](htt
 | Windows x64    | `promptyard-win-x64.exe`|
 | Windows ARM64  | `promptyard-win-arm64.exe` |
 
+:warning: The MacOS version is currently broken due to code signing issues, we're working on a fix.
+
 ## Usage
 
 ### Initialize a project
