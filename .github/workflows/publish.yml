@@ -22,8 +22,10 @@ jobs:
 
       - name: Install dependencies
         run: bun ci
+        working-directory: packages/promptyard
 
       - name: Compile native executables
+        working-directory: packages/promptyard
         run: |
           bun run compile-windows-x64
           bun run compile-windows-arm64
@@ -34,5 +36,4 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: "*"
-          working_directory: dist
+          files: packages/promptyard/dist/*

@@ -17,15 +17,20 @@ jobs:
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
+        working-directory: packages/promptyard
 
       - name: Type check
         run: bun run typecheck
+        working-directory: packages/promptyard
 
       - name: Lint
         run: bun run lint
+        working-directory: packages/promptyard
 
       - name: Format check
         run: bun run format:check
+        working-directory: packages/promptyard
 
       - name: Run tests
         run: bun test
+        working-directory: packages/promptyard

@@ -3,11 +3,6 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "promptyard-monorepo",
-    },
-    "packages/promptyard": {
-      "name": "promptyard",
-      "version": "0.1.5",
       "dependencies": {
         "commander": "^14.0.3",
         "frontmatter": "^0.0.3",
@@ -35,8 +30,6 @@
     "frontmatter": ["frontmatter@0.0.3", "", { "dependencies": { "js-yaml": "^3.4.6" } }, "sha512-mp/uBpxwnfYSl3cjtESYHuOvNWfYEwUjhFjXYbX9zA5b/dAX7qvON3sQQmvnOMUpi21GVG7RQ/ODX0Te28QiOw=="],
 
     "js-yaml": ["js-yaml@3.14.2", "", { "dependencies": { "argparse": "^1.0.7", "esprima": "^4.0.0" }, "bin": { "js-yaml": "bin/js-yaml.js" } }, "sha512-PMSmkqxr106Xa156c2M265Z+FTrPl+oxd/rgOQy2tijQeK5TxQ43psO1ZCwhVOSdnn+RzkzlRz/eY4BgJBYVpg=="],
-
-    "promptyard": ["promptyard@workspace:packages/promptyard"],
 
     "sprintf-js": ["sprintf-js@1.0.3", "", {}, "sha512-D9cPgkvLlV3t3IzL0D0YLvGA9Ahk4PcvVwUbN0dSGr1aP0Nrt4AEnTUbuGvquEC0mA64Gqt1fzirlRs5ibXx8g=="],
 
