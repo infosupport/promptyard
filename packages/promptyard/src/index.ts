@@ -17,7 +17,7 @@ program
   )
   .addOption(
     new Option("--tool <tool>", "Which tool to use in the current directory")
-      .choices(["copilot", "claude", "opencode"])
+      .choices(["copilot", "claude", "opencode", "codex"])
       .makeOptionMandatory(),
   )
   .option("--force", "Fore re-initialization of the directory")
