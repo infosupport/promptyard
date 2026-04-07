@@ -34,7 +34,7 @@ describe("initializeProject", () => {
   });
 
   it("writes settings file with the provided tool", async () => {
-    await initializeProject({ tool: "claude", force: false });
+    await initializeProject({ tool: "claude", force: false, global: false });
 
     const settings = JSON.parse(
       writtenFiles[".promptyard/settings.json"] ?? "",
@@ -43,7 +43,7 @@ describe("initializeProject", () => {
   });
 
   it("writes an empty repositories file", async () => {
-    await initializeProject({ tool: "claude", force: false });
+    await initializeProject({ tool: "claude", force: false, global: false });
 
     const repos = JSON.parse(
       writtenFiles[".promptyard/repositories.json"] ?? "",

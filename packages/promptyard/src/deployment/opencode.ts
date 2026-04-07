@@ -1,4 +1,5 @@
 import fs from "node:fs/promises";
+import path from "node:path";
 import type { Agent } from "../project/agents";
 import type { Repository } from "../project/repositories";
 import type { Skill } from "../project/skills";
@@ -51,7 +52,7 @@ export class OpenCodeDeployer implements Deployer {
     const outputAgentsDirectory = `${targetDirectory}/.opencode/agents/`;
 
     for (const agent of agents) {
-      const outputAgentPath = `${outputAgentsDirectory}${agent.name}/`;
+      const outputAgentPath = path.join(outputAgentsDirectory, path.basename(agent.filePath));
       await agent.copyTo(outputAgentPath, force);
     }
   }

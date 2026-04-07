@@ -6,6 +6,7 @@ import os from "node:os";
 import fs from "node:fs/promises";
 import { loadAgents, type Agent } from "./agents";
 import { loadSkills, type Skill } from "./skills";
+import { getGlobalConfigDir } from "./settings";
 
 export class RepositoriesParseError extends Error {
   errors: string[];
@@ -23,10 +24,9 @@ const repositorySettingsSchema = z.object({
           .string()
           .regex(/^(?![0-9]+$)(?!-)[a-zA-Z0-9-]{0,63}(?<!-)$/i)
           .nonempty(),
-        url: z.url(),
+        url: z.string().min(1),
       }),
-    )
-    .nonempty(),
+    ),
 });
 
 export type RepositorySettings = z.infer<typeof repositorySettingsSchema>;
@@ -74,6 +74,41 @@ export async function saveRepositories(
   }
 
   await repositoriesFile.write(JSON.stringify(settings, null, 2));
+}
+
+export async function loadGlobalRepositories(): Promise<RepositorySettings> {
+  const filePath = path.join(getGlobalConfigDir(), "repositories.json");
+  const repositoriesFile = Bun.file(filePath);
+
+  if (!(await repositoriesFile.exists())) {
+    return { repositories: [] } as unknown as RepositorySettings;
+  }
+
+  const fileContent = await repositoriesFile.text();
+
+  const parseResult = repositorySettingsSchema.safeParse(
+    JSON5.parse(fileContent),
+  );
+
+  if (!parseResult.success) {
+    throw new RepositoriesParseError(
+      "Failed to parse repositories file.",
+      z.treeifyError(parseResult.error).errors,
+    );
+  }
+
+  return parseResult.data;
+}
+
+export async function saveGlobalRepositories(
+  settings: RepositorySettings,
+): Promise<void> {
+  const configDir = getGlobalConfigDir();
+  await fs.mkdir(configDir, { recursive: true });
+  await fs.writeFile(
+    path.join(configDir, "repositories.json"),
+    JSON.stringify(settings, null, 2),
+  );
 }
 
 export async function cloneRepository(

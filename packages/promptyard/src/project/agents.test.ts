@@ -62,17 +62,20 @@ describe("Agent.fromFile", () => {
 
 describe("Agent.copyTo", () => {
   let cpSpy: ReturnType<typeof spyOn>;
+  let mkdirSpy: ReturnType<typeof spyOn>;
   let accessSpy: ReturnType<typeof spyOn>;
   let confirmSpy: ReturnType<typeof spyOn>;
 
   beforeEach(() => {
     cpSpy = spyOn(fs, "cp").mockResolvedValue(undefined);
+    mkdirSpy = spyOn(fs, "mkdir").mockResolvedValue(undefined);
     accessSpy = spyOn(fs, "access").mockRejectedValue(new Error("not found"));
     confirmSpy = spyOn(confirmModule, "confirm");
   });
 
   afterEach(() => {
     cpSpy.mockRestore();
+    mkdirSpy.mockRestore();
     accessSpy.mockRestore();
     confirmSpy.mockRestore();
   });

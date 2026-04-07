@@ -5,6 +5,8 @@ import {
   Repository,
   loadRepositories,
   saveRepositories,
+  loadGlobalRepositories,
+  saveGlobalRepositories,
 } from "./repositories";
 import fs from "node:fs/promises";
 import * as repositories from "./repositories";
@@ -57,10 +59,12 @@ describe("loadRepositories", () => {
     expect(loadRepositories()).rejects.toThrow(ProjectNotInitializedError);
   });
 
-  it("throws RepositoriesParseError when repositories array is empty", async () => {
+  it("returns empty repositories when repositories array is empty", async () => {
     fileContent = JSON.stringify({ repositories: [] });
 
-    expect(loadRepositories()).rejects.toThrow(RepositoriesParseError);
+    const result = await loadRepositories();
+
+    expect(result.repositories).toEqual([]);
   });
 
   it("throws RepositoriesParseError when a repository has an invalid name", async () => {
@@ -71,13 +75,7 @@ describe("loadRepositories", () => {
     expect(loadRepositories()).rejects.toThrow(RepositoriesParseError);
   });
 
-  it("throws RepositoriesParseError when a repository has an invalid url", async () => {
-    fileContent = JSON.stringify({
-      repositories: [{ name: "my-repo", url: "not-a-url" }],
-    });
 
-    expect(loadRepositories()).rejects.toThrow(RepositoriesParseError);
-  });
 
   it("throws RepositoriesParseError when repositories field is missing", async () => {
     fileContent = JSON.stringify({});
@@ -230,5 +228,75 @@ describe("Repository.fromDescription", () => {
 
     expect(repo.skills).toEqual([]);
     expect(repo.agents).toHaveLength(1);
+  });
+});
+
+describe("loadGlobalRepositories", () => {
+  let fileContent: string | null = null;
+
+  beforeEach(() => {
+    fileContent = null;
+
+    // @ts-expect-error
+    Bun.file = (_path: string) => makeBunFile(fileContent);
+  });
+
+  afterEach(() => {
+    Bun.file = originalBunFile;
+  });
+
+  it("returns empty repositories when file does not exist", async () => {
+    fileContent = null;
+
+    const result = await loadGlobalRepositories();
+
+    expect(result.repositories).toEqual([]);
+  });
+
+  it("returns repositories when file is valid", async () => {
+    fileContent = JSON.stringify({
+      repositories: [{ name: "my-repo", url: "https://example.com/repo.git" }],
+    });
+
+    const result = await loadGlobalRepositories();
+
+    expect(result.repositories).toEqual([
+      { name: "my-repo", url: "https://example.com/repo.git" },
+    ]);
+  });
+
+  it("throws RepositoriesParseError when file has invalid content", async () => {
+    fileContent = JSON.stringify({ repositories: [{ name: "-bad", url: "git@github.com:user/repo.git" }] });
+
+    expect(loadGlobalRepositories()).rejects.toThrow(RepositoriesParseError);
+  });
+});
+
+describe("saveGlobalRepositories", () => {
+  let mkdirSpy: ReturnType<typeof spyOn>;
+  let writeFileSpy: ReturnType<typeof spyOn>;
+
+  beforeEach(() => {
+    mkdirSpy = spyOn(fs, "mkdir").mockResolvedValue(undefined);
+    writeFileSpy = spyOn(fs, "writeFile").mockResolvedValue(undefined);
+  });
+
+  afterEach(() => {
+    mkdirSpy.mockRestore();
+    writeFileSpy.mockRestore();
+  });
+
+  it("creates the config directory and writes repositories", async () => {
+    const settings = {
+      repositories: [{ name: "my-repo", url: "https://example.com/repo.git" }],
+    };
+
+    await saveGlobalRepositories(settings as unknown as import("./repositories").RepositorySettings);
+
+    expect(mkdirSpy).toHaveBeenCalledWith(expect.any(String), { recursive: true });
+    expect(writeFileSpy).toHaveBeenCalledWith(
+      expect.stringContaining("repositories.json"),
+      expect.stringContaining("my-repo"),
+    );
   });
 });

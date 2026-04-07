@@ -1,10 +1,13 @@
-import { afterEach, beforeEach, describe, expect, it } from "bun:test";
+import { afterEach, beforeEach, describe, expect, it, spyOn } from "bun:test";
 import { ProjectNotInitializedError } from "../errors";
 import {
   SettingsParseError,
   loadProjectSettings,
   saveProjectSettings,
+  saveGlobalSettings,
+  loadGlobalSettings,
 } from "./settings";
+import fs from "node:fs/promises";
 
 function makeBunFile(
   content: string | null,
@@ -131,5 +134,61 @@ describe("saveProjectSettings", () => {
     await saveProjectSettings({ tool: "claude" }, true);
 
     expect(JSON.parse(writtenData ?? "")).toEqual({ tool: "claude" });
+  });
+});
+
+describe("saveGlobalSettings", () => {
+  let mkdirSpy: ReturnType<typeof spyOn>;
+  let writeFileSpy: ReturnType<typeof spyOn>;
+
+  beforeEach(() => {
+    mkdirSpy = spyOn(fs, "mkdir").mockResolvedValue(undefined);
+    writeFileSpy = spyOn(fs, "writeFile").mockResolvedValue(undefined);
+  });
+
+  afterEach(() => {
+    mkdirSpy.mockRestore();
+    writeFileSpy.mockRestore();
+  });
+
+  it("creates the config directory and writes settings", async () => {
+    await saveGlobalSettings({ tool: "claude" });
+
+    expect(mkdirSpy).toHaveBeenCalledWith(expect.any(String), { recursive: true });
+    expect(writeFileSpy).toHaveBeenCalledWith(
+      expect.stringContaining("settings.json"),
+      expect.stringContaining('"tool": "claude"'),
+    );
+  });
+});
+
+describe("loadGlobalSettings", () => {
+  let globalFileContent: string | null = null;
+
+  beforeEach(() => {
+    globalFileContent = null;
+
+    // @ts-expect-error
+    Bun.file = (_path: string) => makeBunFile(globalFileContent);
+  });
+
+  afterEach(() => {
+    Bun.file = originalBunFile;
+  });
+
+  it("returns undefined when global settings file does not exist", async () => {
+    globalFileContent = null;
+
+    const result = await loadGlobalSettings();
+
+    expect(result).toBeUndefined();
+  });
+
+  it("returns parsed settings when global settings file exists", async () => {
+    globalFileContent = JSON.stringify({ tool: "opencode" });
+
+    const result = await loadGlobalSettings();
+
+    expect(result).toEqual({ tool: "opencode" });
   });
 });

@@ -98,7 +98,7 @@ describe("ClaudeDeployer.deployRepository agents", () => {
     );
 
     expect(copyToSpy).toHaveBeenCalledWith(
-      "/target/.claude/agents/my-agent/",
+      "/target/.claude/agents/my-agent.md",
       false,
     );
   });
@@ -114,7 +114,7 @@ describe("ClaudeDeployer.deployRepository agents", () => {
     );
 
     expect(copyToSpy).toHaveBeenCalledWith(
-      "/target/.claude/agents/my-agent/",
+      "/target/.claude/agents/my-agent.md",
       true,
     );
   });

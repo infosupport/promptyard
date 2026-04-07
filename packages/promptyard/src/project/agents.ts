@@ -40,6 +40,7 @@ export class Agent {
       if (!confirmed) return;
     }
 
+    await fs.mkdir(path.join(targetPath, ".."), { recursive: true });
     await fs.cp(this.filePath, targetPath, { force });
   }
 }

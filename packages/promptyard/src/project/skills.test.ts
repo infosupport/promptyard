@@ -61,15 +61,18 @@ describe("Skill.fromDirectory", () => {
 
 describe("Skill.copyTo", () => {
   let cpSpy: ReturnType<typeof spyOn>;
+  let mkdirSpy: ReturnType<typeof spyOn>;
   let rmSpy: ReturnType<typeof spyOn>;
 
   beforeEach(() => {
     cpSpy = spyOn(fs, "cp").mockResolvedValue(undefined);
+    mkdirSpy = spyOn(fs, "mkdir").mockResolvedValue(undefined);
     rmSpy = spyOn(fs, "rm").mockResolvedValue(undefined);
   });
 
   afterEach(() => {
     cpSpy.mockRestore();
+    mkdirSpy.mockRestore();
     rmSpy.mockRestore();
   });
 

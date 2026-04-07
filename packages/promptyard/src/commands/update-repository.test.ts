@@ -74,12 +74,12 @@ describe("updateProjectRepository", () => {
 
   it("throws RepositoryNotFoundError when named repo doesn't exist", async () => {
     await expect(
-      updateProjectRepository({ name: "nonexistent", force: false }),
+      updateProjectRepository("nonexistent", { force: false, global: false }),
     ).rejects.toThrow(RepositoryNotFoundError);
   });
 
   it("deploys the named repository with force=true when --force is passed", async () => {
-    await updateProjectRepository({ name: "my-repo", force: true });
+    await updateProjectRepository("my-repo", { force: true, global: false });
 
     expect(deployRepositorySpy).toHaveBeenCalledWith(
       fakeRepository,
@@ -89,7 +89,7 @@ describe("updateProjectRepository", () => {
   });
 
   it("deploys the named repository with force=false when --force is not passed", async () => {
-    await updateProjectRepository({ name: "my-repo", force: false });
+    await updateProjectRepository("my-repo", { force: false, global: false });
 
     expect(deployRepositorySpy).toHaveBeenCalledWith(
       fakeRepository,
@@ -99,13 +99,13 @@ describe("updateProjectRepository", () => {
   });
 
   it("deploys all repositories when no name is provided", async () => {
-    await updateProjectRepository({ force: false });
+    await updateProjectRepository(undefined, { force: false, global: false });
 
     expect(deployRepositorySpy).toHaveBeenCalledTimes(2);
   });
 
   it("does not call saveRepositories", async () => {
-    await updateProjectRepository({ name: "my-repo", force: false });
+    await updateProjectRepository("my-repo", { force: false, global: false });
 
     expect(saveRepositoriesSpy).not.toHaveBeenCalled();
   });

@@ -1,6 +1,9 @@
 import { JSON5 } from "bun";
 import { z } from "zod";
 import { ProjectNotInitializedError } from "../errors";
+import fs from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
 
 export class SettingsParseError extends Error {
   errors: string[];
@@ -15,6 +18,13 @@ export const projectSettingsSchema = z.object({
 });
 
 export type ProjectSettings = z.infer<typeof projectSettingsSchema>;
+
+export function getGlobalConfigDir(): string {
+  const home = os.homedir();
+  return process.platform === "win32"
+    ? path.join(home, ".promptyard")
+    : path.join(home, ".config", "promptyard");
+}
 
 export async function loadProjectSettings(): Promise<ProjectSettings> {
   const globalProjectSettings = await loadGlobalProjectSettings();
@@ -42,15 +52,22 @@ export async function saveProjectSettings(
   await settingsFile.write(JSON.stringify(settings, null, 2));
 }
 
+export async function loadGlobalSettings(): Promise<ProjectSettings | undefined> {
+  return loadGlobalProjectSettings();
+}
+
+export async function saveGlobalSettings(settings: ProjectSettings): Promise<void> {
+  const configDir = getGlobalConfigDir();
+  await fs.mkdir(configDir, { recursive: true });
+  await fs.writeFile(path.join(configDir, "settings.json"), JSON.stringify(settings, null, 2));
+}
+
 async function loadGlobalProjectSettings(): Promise<
   ProjectSettings | undefined
 > {
-  const projectSettingsPath =
-    process.platform === "linux" || process.platform === "darwin"
-      ? "~/.config/promptyard/settings.json"
-      : "~/.promptyard/settings.json";
-
-  const globalSettingsFile = Bun.file(projectSettingsPath);
+  const globalSettingsFile = Bun.file(
+    path.join(getGlobalConfigDir(), "settings.json"),
+  );
 
   if (!(await globalSettingsFile.exists())) {
     return undefined;

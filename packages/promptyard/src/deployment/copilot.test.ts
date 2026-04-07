@@ -98,7 +98,7 @@ describe("CopilotDeployer.deployRepository agents", () => {
     );
 
     expect(copyToSpy).toHaveBeenCalledWith(
-      "/target/.github/agents/my-agent/",
+      "/target/.github/agents/my-agent.md",
       false,
     );
   });
@@ -114,7 +114,7 @@ describe("CopilotDeployer.deployRepository agents", () => {
     );
 
     expect(copyToSpy).toHaveBeenCalledWith(
-      "/target/.github/agents/my-agent/",
+      "/target/.github/agents/my-agent.md",
       true,
     );
   });
