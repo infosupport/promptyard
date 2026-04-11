@@ -11,7 +11,7 @@ export class SettingsParseError extends Error {
 }
 
 export const projectSettingsSchema = z.object({
-  tool: z.enum(["claude", "copilot", "opencode"]).nonoptional(),
+  tool: z.enum(["claude", "copilot", "opencode", "codex"]).nonoptional(),
 });
 
 export type ProjectSettings = z.infer<typeof projectSettingsSchema>;

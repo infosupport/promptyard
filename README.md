@@ -6,15 +6,29 @@ Promptyard is a CLI tool that installs agents, prompts, and skills from Git repo
 
 Download the latest binary for your platform from the [GitHub Releases page](https://github.com/willem-meints/promptyard/releases) and place it somewhere on your `PATH`.
 
-| Platform       | File                    |
-|----------------|-------------------------|
-| Linux x64      | `promptyard-linux-x64`  |
-| Linux ARM64    | `promptyard-linux-arm64`|
-| macOS (Apple Silicon) | `promptyard-mac-arm64` |
-| Windows x64    | `promptyard-win-x64.exe`|
-| Windows ARM64  | `promptyard-win-arm64.exe` |
+| Platform              | File                       |
+| --------------------- | -------------------------- |
+| Linux x64             | `promptyard-linux-x64`     |
+| Linux ARM64           | `promptyard-linux-arm64`   |
+| macOS (Apple Silicon) | `promptyard-mac-arm64`     |
+| Windows x64           | `promptyard-win-x64.exe`   |
+| Windows ARM64         | `promptyard-win-arm64.exe` |
 
 :warning: The MacOS version is currently broken due to code signing issues, we're working on a fix.
+
+**Workaround: build from source on macOS**
+
+1. Install [Bun](https://bun.sh): `curl -fsSL https://bun.sh/install | bash`
+2. Clone this repository and navigate to the package:
+   ```bash
+   cd packages/promptyard
+   bun install
+   bun run compile-macos-arm64
+   ```
+3. The binary is output to `dist/promptyard-darwin-arm64`. Either rename it to `promptyard` or invoke it by that name. Move it somewhere on your `PATH`, for example:
+   ```bash
+   (sudo) mv dist/promptyard-darwin-arm64 /usr/local/bin/promptyard
+   ```
 
 ## Usage
 
