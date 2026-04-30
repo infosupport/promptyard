@@ -34,6 +34,7 @@ export class Skill {
 
   async copyTo(targetPath: string): Promise<void> {
     await fs.rm(targetPath, { recursive: true, force: true });
+    await fs.mkdir(path.join(targetPath, ".."), { recursive: true });
     await fs.cp(this.path, targetPath, { recursive: true });
   }
 }

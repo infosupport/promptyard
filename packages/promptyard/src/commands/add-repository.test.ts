@@ -64,20 +64,18 @@ describe("addProjectRepository", () => {
   });
 
   it("creates a deployer for the configured tool", async () => {
-    await addProjectRepository({
-      name: "my-repo",
-      url: "https://example.com/repo.git",
+    await addProjectRepository("my-repo", "https://example.com/repo.git", {
       force: false,
+      global: false,
     });
 
     expect(createDeployerSpy).toHaveBeenCalledWith("opencode");
   });
 
   it("clones the repository from the provided URL", async () => {
-    await addProjectRepository({
-      name: "my-repo",
-      url: "https://example.com/repo.git",
+    await addProjectRepository("my-repo", "https://example.com/repo.git", {
       force: false,
+      global: false,
     });
 
     expect(fromDescriptionSpy).toHaveBeenCalledWith({
@@ -87,10 +85,9 @@ describe("addProjectRepository", () => {
   });
 
   it("deploys the repository passing the force flag", async () => {
-    await addProjectRepository({
-      name: "my-repo",
-      url: "https://example.com/repo.git",
+    await addProjectRepository("my-repo", "https://example.com/repo.git", {
       force: true,
+      global: false,
     });
 
     expect(fakeDeployer.deployRepository).toHaveBeenCalledWith(
@@ -101,10 +98,9 @@ describe("addProjectRepository", () => {
   });
 
   it("adds the repository to the saved settings", async () => {
-    await addProjectRepository({
-      name: "my-repo",
-      url: "https://example.com/repo.git",
+    await addProjectRepository("my-repo", "https://example.com/repo.git", {
       force: false,
+      global: false,
     });
 
     const [savedSettings] = saveRepositoriesSpy.mock.calls[0] as [
@@ -117,10 +113,9 @@ describe("addProjectRepository", () => {
   });
 
   it("preserves existing repositories when adding a new one", async () => {
-    await addProjectRepository({
-      name: "my-repo",
-      url: "https://example.com/repo.git",
+    await addProjectRepository("my-repo", "https://example.com/repo.git", {
       force: false,
+      global: false,
     });
 
     const [savedSettings] = saveRepositoriesSpy.mock.calls[0] as [

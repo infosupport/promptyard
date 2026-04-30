@@ -38,12 +38,12 @@ describe("removeProjectRepository", () => {
 
   it("throws RepositoryNotFoundError when repo name doesn't exist", async () => {
     await expect(
-      removeProjectRepository({ name: "nonexistent" }),
+      removeProjectRepository("nonexistent", { global: false }),
     ).rejects.toBeInstanceOf(RepositoryNotFoundError);
   });
 
   it("calls confirm with a message including the repo name", async () => {
-    await removeProjectRepository({ name: "my-repo" });
+    await removeProjectRepository("my-repo", { global: false });
 
     expect(confirmSpy).toHaveBeenCalledWith(expect.stringContaining("my-repo"));
   });
@@ -51,13 +51,13 @@ describe("removeProjectRepository", () => {
   it("does not save when user declines confirmation", async () => {
     confirmSpy.mockResolvedValue(false);
 
-    await removeProjectRepository({ name: "my-repo" });
+    await removeProjectRepository("my-repo", { global: false });
 
     expect(saveRepositoriesSpy).not.toHaveBeenCalled();
   });
 
   it("removes the named repo from saved settings when confirmed", async () => {
-    await removeProjectRepository({ name: "my-repo" });
+    await removeProjectRepository("my-repo", { global: false });
 
     const [savedSettings] = saveRepositoriesSpy.mock.calls[0] as [
       typeof fakeRepositorySettings,
@@ -68,7 +68,7 @@ describe("removeProjectRepository", () => {
   });
 
   it("preserves other repositories when removing one", async () => {
-    await removeProjectRepository({ name: "my-repo" });
+    await removeProjectRepository("my-repo", { global: false });
 
     const [savedSettings] = saveRepositoriesSpy.mock.calls[0] as [
       typeof fakeRepositorySettings,

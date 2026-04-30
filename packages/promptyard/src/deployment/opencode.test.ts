@@ -104,7 +104,7 @@ describe("OpenCodeDeployer.deployRepository agents", () => {
     );
 
     expect(copyToSpy).toHaveBeenCalledWith(
-      "/target/.opencode/agents/my-agent/",
+      "/target/.opencode/agents/my-agent.md",
       false,
     );
   });
@@ -120,7 +120,7 @@ describe("OpenCodeDeployer.deployRepository agents", () => {
     );
 
     expect(copyToSpy).toHaveBeenCalledWith(
-      "/target/.opencode/agents/my-agent/",
+      "/target/.opencode/agents/my-agent.md",
       true,
     );
   });

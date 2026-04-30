@@ -20,7 +20,8 @@ program
       .choices(["copilot", "claude", "opencode", "codex"])
       .makeOptionMandatory(),
   )
-  .option("--force", "Fore re-initialization of the directory")
+  .option("--force", "Force re-initialization of the directory")
+  .option("--global", "Initialize global config instead of the current project")
   .action(initializeProject);
 
 program
@@ -37,6 +38,7 @@ program
     "Adds a new repository containing agents, prompts, and skills to the local directory",
   )
   .option("--force", "Overwrite existing agents, prompts, and skills")
+  .option("--global", "Install into global config instead of the current project")
   .action(addProjectRepository);
 
 program
@@ -46,12 +48,14 @@ program
     "Updates the specified repository or all repositories when the name is not provided",
   )
   .option("--force", "Overwrite existing agents, prompts, and skills")
+  .option("--global", "Update repositories in global config instead of the current project")
   .action(updateProjectRepository);
 
 program
   .command("remove")
   .argument("<name>", "Name of the repository to remove")
   .description("Removes the specified repository")
+  .option("--global", "Remove from global config instead of the current project")
   .action(removeProjectRepository);
 
 program.parse();
